@@ -1,0 +1,126 @@
+/* Author: Aaron Scher
+ */
+body {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 14pt;
+/*   border: 1px solid black; /* width, style, colour */
+ */  padding: 20px;
+  margin: 10px; 
+}
+
+.imageOverlay {
+  position: relative;
+  display: inline;
+ 
+}
+.imtip {
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+}
+
+.imageBasic {
+  max-width: 100%;
+  height: auto; 
+}
+
+@media screen and (min-width: 700px) {
+  .imageBasic {
+    object-fit: contain;
+    width: 700px;
+  }
+}
+
+#grid-container-inputs{
+  display: flex;
+  flex-wrap: wrap-reverse;
+ }
+
+ #column1{
+   padding:0 15px;
+ }
+
+.textInput {
+  width: 45px;
+  padding: 2.5px 2.5px;
+/*   font-size: 80%;
+ */  border: 1px solid;
+  border-color: gray; 
+  background-color: white;
+  border-radius: 5px;
+}
+
+.textInput:hover {
+    box-shadow: 2px 2px darkgrey;
+}
+
+.pullDownMenu{
+  border-color: gray; 
+  background-color: white;
+  border-radius: 5px;
+  padding: 2.5px;
+}
+
+.pullDownMenu:hover {
+    box-shadow: 2px 2px darkgrey;
+}
+
+.variableLabel {
+  padding: 5px;
+  /* font-size: 90%; */
+}
+
+.variableSubTitle {
+  padding: 5px;
+  font-weight: bold;
+}
+
+.column {
+  float: left;
+  width: 280px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.grid-container-plots {
+  justify-content: start;
+  display: grid;
+  grid-template-columns: repeat( auto-fit, minmax(18rem, 1fr) );
+  grid-auto-rows: 20rem;
+  padding: 0.5rem;
+}
+
+.buttonStyle2 {
+  display: block
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-right: 7px;
+  background-color: #4CAF50;
+  font-size: 15px;
+  color: white;
+  border: none;
+  padding: 10px 10px;    
+  border-radius: 10px;
+  box-shadow: 0 4px #999; */
+}
+
+.buttonStyle2:hover {
+  background-color: #3e8e41;
+  border: none;
+}
+
+.buttonStyle2:active {
+  background-color: #3e8e41;
+ box-shadow: 0 3px #666;
+  transform: translateY(3px);
+}
+
+.equationStyle {
+  font-family: 'Times New Roman', Times, serif;
+}
+
