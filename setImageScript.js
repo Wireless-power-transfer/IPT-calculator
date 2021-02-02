@@ -44,6 +44,6 @@ function setImage(sourceType, invConst, rectConst, loadType) {
     document.getElementById("loadImage").src = "images/loadCplVd.png";
   }
   if (loadType == 5) {
-    document.getElementById("loadImage").src = "images/loadCplCd.png";
+    document.getElementById("loadImage").src = "images/loadCplCD.png.png";
   }
 }
