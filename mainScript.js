@@ -5,6 +5,26 @@ function initFunction() {
   buttonFunction();
 }
 
+var open = 0; //1 means the sidebar is open
+
+function openNav() {
+  if (open == 1) {
+    document.getElementById("mySideBar").style.width = "320px";
+    document.getElementById("main").style.marginLeft = "340px";
+    document.getElementById("openbtn").innerHTML = "&#9776; Close Sidebar";
+    open = 0;
+    return;
+  }
+
+  if (open == 0) {
+    document.getElementById("mySideBar").style.width = "0";
+    document.getElementById("main").style.marginLeft = "0";
+    document.getElementById("openbtn").innerHTML = "&#9776; Open Sidebar";
+    open = 1;
+    return;
+  }
+}
+
 //This function is called immediately after the user changes the source type (choice between constant voltage and constant current). The purpose of this function is to change the text label to reflect the user's selection.
 function sourceSelectFunction() {
   updateHash();
@@ -125,6 +145,7 @@ function download(filename, text) {
 
 function buttonFunction(genCSV) {
   initValuesFromHash();
+  document.getElementById("errorMessage").innerHTML = ""; //clear the error messages
 
   //Get source and load types:
   let sourceType = sourceSelectFunction(); //Indicates source type. Will return 1 for Vg or 2 for Ig
@@ -152,9 +173,11 @@ function buttonFunction(genCSV) {
   let fnum = Number(document.getElementById("fnum").value); //number of frequency points in plot
   let invConst = Number(document.getElementById("inverter").value); //invConst = 1 (half bridge) and =2 (full bridge)
   let rectConst = Number(document.getElementById("rectifier").value); //rectConst = 1 (half bridge) and =2 (full bridge)
+  let Ron = Number(document.getElementById("Ron").value); //MOSFET on resistance
+  let Vfwd = Number(document.getElementById("Vfwd").value); //diode forward voltage
 
   //Calculate and define other parameters and variables:
-  let R1 = (2 * math.pi * f01 * L1) / Q1; //compute R1 (ESR of primary)
+  let R1 = (2 * math.pi * f01 * L1) / Q1 + Ron * invConst; //compute R1 (ESR of primary)
   let R2 = (2 * math.pi * f02 * L2) / Q2; //compute R2 (ESR of secndary)
   let C1 = 1 / (2 * math.pi * f01) ** 2 / L1; //compute C1 (primary)
   let C2 = 1 / (2 * math.pi * f02) ** 2 / L2; //compute C2 (secondary)
@@ -193,61 +216,75 @@ function buttonFunction(genCSV) {
   let Vg = [];
   let Ig = [];
   let RL = [];
-
+  let PL = []; //power delivered to DC load
   let = specialOutputMessage = []; //special output message that appears after the calculate and plot button is pressed
 
+  let mNum = 3; //Number of times to iterate over diode
   // Analyze circuit at each frequency using ABCD matrices
   for (let i = 0; i < fnum; i++) {
-    freq[i] = fmin + delta_f * i; //evaluate frequency at index i
-    seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
-    seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
-    seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
-    seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
-    K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
-    Kinverter.K = K; //set value of K
-    Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
+    let etaDiode = 1; //Start diode iteration with diode rectifier efficiency = 1.
+    SSIPT_System.etaDiode = etaDiode;
+    for (let m = 0; m < mNum; m++) {
+      freq[i] = fmin + delta_f * i; //evaluate frequency at index i
+      seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+      seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
+      seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
+      seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
+      K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
+      Kinverter.K = K; //set value of K
+      Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
 
-    systemABCDmatrix = math.multiply(
-      seriesPrimary.ABCD,
-      Kinverter.ABCD,
-      seriesSecondary.ABCD
-    ); //Compute system ABCD matrix:
+      systemABCDmatrix = math.multiply(
+        seriesPrimary.ABCD,
+        Kinverter.ABCD,
+        seriesSecondary.ABCD
+      ); //Compute system ABCD matrix:
 
-    SSIPT_System.A = systemABCDmatrix.subset(math.index(0, 0)); //extract individual A of system's ABCD matrix and assign
-    SSIPT_System.B = systemABCDmatrix.subset(math.index(0, 1)); //extract individual B of system's ABCD matrix and assign
-    SSIPT_System.C = systemABCDmatrix.subset(math.index(1, 0)); //extract individual C of system's ABCD matrix and assign
-    SSIPT_System.D = systemABCDmatrix.subset(math.index(1, 1)); //extract individual D of system's ABCD matrix and assign
-    SSIPT_System.SolveForI1_I2_V1_V2(
-      sourceType,
-      loadType,
-      sourceValue_Vg_Ig,
-      loadValue_RL_VL_IL_PL,
-      rectConst,
-      invConst
-    ); //find I1, I2, V1, and V2
+      SSIPT_System.A = systemABCDmatrix.subset(math.index(0, 0)); //extract individual A of system's ABCD matrix and assign
+      SSIPT_System.B = systemABCDmatrix.subset(math.index(0, 1)); //extract individual B of system's ABCD matrix and assign
+      SSIPT_System.C = systemABCDmatrix.subset(math.index(1, 0)); //extract individual C of system's ABCD matrix and assign
+      SSIPT_System.D = systemABCDmatrix.subset(math.index(1, 1)); //extract individual D of system's ABCD matrix and assign
+      SSIPT_System.SolveForI1_I2_V1_V2(
+        sourceType,
+        loadType,
+        sourceValue_Vg_Ig,
+        loadValue_RL_VL_IL_PL,
+        rectConst,
+        invConst
+      ); //find I1, I2, V1, and V2
 
-    //////Define arrays for plotting. These arrays below are general, in that they hold for any SISO two-port IPT system (not just series-series):
-    magV1[i] = SSIPT_System.magV1; //magntiude of AC input voltage
-    magV2[i] = SSIPT_System.magV2; //magnitude of AC output voltage
-    magI1[i] = SSIPT_System.magI1; //magntitude of AC input current
-    magI2[i] = SSIPT_System.magI2; //magntidue of AC output current
-    P1[i] = SSIPT_System.P1;
-    P2[i] = SSIPT_System.P2;
-    Zin[i] = SSIPT_System.Zin;
-    angZin[i] = SSIPT_System.angZin;
-    magZin[i] = SSIPT_System.magZin;
-    VL[i] = SSIPT_System.VL;
-    IL[i] = SSIPT_System.IL;
-    efficiency[i] = SSIPT_System.efficiency;
-    Vg[i] = SSIPT_System.Vg; //ADD ON
-    Ig[i] = SSIPT_System.Ig; //ADD ON
-    RL[i] = SSIPT_System.RL; //ADD ON
+      //////Define arrays for plotting. These arrays below are general, in that they hold for any SISO two-port IPT system (not just series-series):
+      magV1[i] = SSIPT_System.magV1; //magntiude of AC input voltage
+      magV2[i] = SSIPT_System.magV2; //magnitude of AC output voltage
+      magI1[i] = SSIPT_System.magI1; //magntitude of AC input current
+      magI2[i] = SSIPT_System.magI2; //magntidue of AC output current
+      P1[i] = SSIPT_System.P1;
+      P2[i] = SSIPT_System.P2;
+      Zin[i] = SSIPT_System.Zin;
+      angZin[i] = SSIPT_System.angZin;
+      magZin[i] = SSIPT_System.magZin;
+      VL[i] = SSIPT_System.VL;
+      IL[i] = SSIPT_System.IL;
+      efficiency[i] = SSIPT_System.efficiency;
+      Vg[i] = SSIPT_System.Vg; //ADD ON
+      Ig[i] = SSIPT_System.Ig; //ADD ON
+      RL[i] = SSIPT_System.RL; //ADD ON
+      PL[i] = SSIPT_System.PL; //ADD ON
 
-    //Calculate arrays using equations specific to the SSIPT system:
-    magVC1[i] = magI1[i] / freq[i] / math.pi / 2 / C1; //magntiude of voltage across primary capacitor
-    magVC2[i] = magI2[i] / freq[i] / math.pi / 2 / C2; //magntiude of voltage across secondary capacitor
-    Pl1[i] = (magI1[i] * magI1[i] * R1) / 2;
-    Pl2[i] = (magI2[i] * magI2[i] * R2) / 2;
+      //Calculate arrays using equations specific to the SSIPT system:
+      magVC1[i] = magI1[i] / freq[i] / math.pi / 2 / C1; //magntiude of voltage across primary capacitor
+      magVC2[i] = magI2[i] / freq[i] / math.pi / 2 / C2; //magntiude of voltage across secondary capacitor
+      Pl1[i] = (magI1[i] * magI1[i] * R1) / 2;
+      Pl2[i] = (magI2[i] * magI2[i] * R2) / 2;
+
+      //Handle the diode
+
+      etaDiode = 1 / (1 + (2 * Vfwd) / VL[i]);
+      if (VL[i] == 0) {
+        etaDiode = 0;
+      }
+      SSIPT_System.etaDiode = etaDiode;
+    }
   }
 
   if (genCSV == 1) {
@@ -298,7 +335,7 @@ function buttonFunction(genCSV) {
     freq,
     efficiency,
     P1,
-    P2,
+    PL,
     magV1,
     magI1,
     magV2,
@@ -381,6 +418,8 @@ class TotalIPTSystem {
     this.RL = [];
     this.ReL = [];
     this.efficiency = [];
+    this.etaDiode = [];
+    this.PL = [];
   }
   SolveForI1_I2_V1_V2(
     sourceType,
@@ -391,14 +430,17 @@ class TotalIPTSystem {
     invConst
   ) {
     let errorFlag = 0;
-    document.getElementById("errorMessage").innerHTML = "";
 
     if (sourceType == 1 && loadType == 1) {
       //Source = Vg and Load = RL
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
-      this.ReL = (this.RL * 2 * rectConst * rectConst) / math.pi / math.pi; //calculate effective AC resistance
+      this.ReL =
+        (this.RL * 2 * rectConst * rectConst) /
+        math.pi /
+        math.pi /
+        this.etaDiode; //calculate effective AC resistance
       this.I2 = math.divide(
         this.V1,
         math.add(math.multiply(this.A, this.ReL), this.B)
@@ -415,7 +457,11 @@ class TotalIPTSystem {
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
-      this.ReL = (this.RL * 2 * rectConst * rectConst) / math.pi / math.pi; //calculate effective AC resistance
+      this.ReL =
+        (this.RL * 2 * rectConst * rectConst) /
+        math.pi /
+        math.pi /
+        this.etaDiode; //calculate effective AC resistance
       this.I2 = math.divide(
         this.I1,
         math.add(math.multiply(this.C, this.ReL), this.D)
@@ -431,7 +477,8 @@ class TotalIPTSystem {
       //Source = Vg and Load = VL
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.magV2 = (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi; //AC voltage defined by user
+      this.magV2 =
+        (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi / this.etaDiode; //AC voltage defined by user
 
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
       let a_ = math.abs(this.A) ** 2 - (this.V1 / this.magV2) ** 2;
@@ -482,7 +529,8 @@ class TotalIPTSystem {
       //Ig and VL
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
-      this.magV2 = (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi; //AC load voltage defined by user's choice of VL
+      this.magV2 =
+        (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi / this.etaDiode; //AC load voltage defined by user's choice of VL
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
       let a_ = math.abs(this.C) ** 2 - (this.I1 / this.magV2) ** 2;
       let b_ = math.add(
@@ -634,7 +682,7 @@ class TotalIPTSystem {
       //Vg and PLV
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.P2 = loadValue_RL_VL_IL_PL; ///Load power
+      this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.B, this.A); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.V1, this.A); // equivalent thevenin voltage in terms of ABCD parameters
       //let P2Available = (math.abs(Vth) ** 2) / 8 / math.re(Zth) //Available power from source
@@ -665,7 +713,7 @@ class TotalIPTSystem {
       //Vg and PLI
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.P2 = loadValue_RL_VL_IL_PL; ///Load power
+      this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.B, this.A); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.V1, this.A); // equivalent thevenin voltage in terms of ABCD parameters
       //let P2Available = (math.abs(Vth) ** 2) / 8 / math.re(Zth) //Available power from source
@@ -696,7 +744,7 @@ class TotalIPTSystem {
       //Ig and PLV
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
-      this.P2 = loadValue_RL_VL_IL_PL; ///Load power
+      this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.D, this.C); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.I1, this.C); // equivalent thevenin voltage in terms of ABCD parameters
       //let P2Available = (math.abs(Vth) ** 2) / 8 / math.re(Zth) //Available power from source
@@ -727,7 +775,7 @@ class TotalIPTSystem {
       //Ig and PLI
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
-      this.P2 = loadValue_RL_VL_IL_PL; ///Load power
+      this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.D, this.C); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.I1, this.C); // equivalent thevenin voltage in terms of ABCD parameters
       //let P2Available = (math.abs(Vth) ** 2) / 8 / math.re(Zth) //Available power from source
@@ -771,14 +819,18 @@ class TotalIPTSystem {
       this.RL = 0;
       this.magV2 = 0;
       this.Ig = 0;
+      this.PL = 0;
+      this.Vg = 0;
     } else {
       this.P2 = math.re(
         math.divide(math.multiply(math.conj(this.I2), this.V2), 2)
       ); //Solve for output power
+      this.PL = this.P2 * this.etaDiode;
       this.P1 = math.re(
         math.divide(math.multiply(math.conj(this.I1), this.V1), 2)
       ); //Solve for input power
-      this.efficiency = math.multiply(math.divide(this.P2, this.P1), 100); //calculate power transfer efficiency
+      this.efficiency =
+        math.multiply(math.divide(this.P2, this.P1), 100) * this.etaDiode; //calculate power transfer efficiency
       this.magI2 = math.abs(this.I2); //magntiude of secondary current
       this.magI1 = math.abs(this.I1); //magntidue of primary current
       this.magV2 = math.abs(this.V2); //magnitude of output AC voltage
@@ -787,7 +839,7 @@ class TotalIPTSystem {
       this.angZin = (this.Zin.toPolar().phi * 180) / math.pi; //Angle of input impedance
       this.magZin = math.abs(this.Zin); //Magnitude of input impedance
       this.ReL = this.magV2 / this.magI2;
-      this.VL = (this.magV2 / 2 / rectConst) * math.pi;
+      this.VL = (this.magV2 / 2 / rectConst) * math.pi * this.etaDiode;
       this.IL = (this.magI2 * rectConst) / math.pi;
       this.RL = this.VL / this.IL;
       this.Vg = (this.magV1 * math.pi) / 2 / invConst;

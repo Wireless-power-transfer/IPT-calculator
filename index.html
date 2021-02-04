@@ -10,38 +10,35 @@
   <script type="text/javascript" src="plotsGenerateScript.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
   <script type="text/javascript" src="setImageScript.js"></script> <!-- Contains custom js function for generating the png image of the system-->
   <script type="text/javascript" src="hashScript.js"></script> <!-- Contains custom js functions for working with the URL hash string-->
-<!-- Author: Aaron Scher-->
+  <script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
+
+  <!-- Author: Aaron Scher-->
 
   </head>
   <!-- When the page is finished loading, execute the button functions:-->
   <body onload="initFunction()"> 
 
-<h1>Inductive power transfer calculator</h1> 
-<h2>Configuration: series-series (SS) </h2>
-Author: &nbsp; Aaron Scher (aaron.scher@oit.edu). <br>
- Please contact me if you find any bugs in the program or have suggestions for improvement. This program is written in Javasript and uses the Math.js and Plotly.js libraries.
-
-<h3>Directions</h3>
-
-<p>This is an interactive engineering design calculator for an inductive power transfer (IPT) system with series-series compensation.
-Change the system parameters in the interactive text boxes and pulldown menus below to generate updated frequency response plots of various parameters.</p>
+<button id = "openbtn" class="openbtn" onclick="openNav()">&#9776; Close Sidebar</button>
 
 
-<div id="grid-container-inputs">
-  <div id="column1"> 
-    <div class="variableSubTitle"> Source/load: 
-    </div>
-    <div class="variableLabel">
+<div id = "mySideBar" class="sideBar">
+
+
+  <div class="variableSubTitle" style="text-align:center; "> Input data 
+  </div>
+  <div class="variableSubTitle"> Source/load: 
+  </div>
+  <div class="variableLabel">
       <label for="sourceType">Source type:</label>
       <select id="source" onchange="sourceSelectFunction()" class="pullDownMenu">
         <option value="1" class="textInput">Constant voltage</option>
         <option value="2" class="textInput">Constant current</option>
       </select>
-     </div>
-     <div class = "variableLabel"><label id="sourceTypeLabel"> &nbsp;&nbsp;Source voltage (DC), <span style='font-family:Times New Roman'><i>V</i><sub>g</sub> </span>  (V):</label><input type="text" id="Vg_Ig" value="500" class="textInput" onchange="updateHash()">
-    </div>
+  </div>
+  <div class = "variableLabel"><label id="sourceTypeLabel"> &nbsp;&nbsp;Source voltage (DC), <span style='font-family:Times New Roman'><i>V</i><sub>g</sub> </span>  (V):</label><input type="text" id="Vg_Ig" value="500" class="textInput" onchange="updateHash()">
+  </div>
  
-     <div class="variableLabel">
+  <div class="variableLabel">
        <label for="loadType">Load type:</label>
        <select id="load" onchange="loadSelectFunction()" class="pullDownMenu">
         <option value="1" class="textInput">Constant resistance</option>
@@ -50,7 +47,7 @@ Change the system parameters in the interactive text boxes and pulldown menus be
         <option value="4" class="textInput">Constant power (V driven)</option>  
         <option value="5" class="textInput">Constant power (I driven)</option>
       </select>
-    </div>
+  </div>
   
     <div class="variableLabel"><label id="loadTypeLabel"> Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (Ohm): </label><input type="text" id="RL_VL_IL_PL" value="5" class="textInput" onchange="updateHash()">
     </div>
@@ -61,6 +58,8 @@ Change the system parameters in the interactive text boxes and pulldown menus be
         <option value="2">Full-bridge inverter</option>
     </select>
   </div>
+    <div class="variableLabel">&nbsp;&nbsp;FET on-resistance (Ohm): <input type="text" id="Ron" value="!" class="textInput" onchange="updateHash()">
+  </div>
 
   <div class="variableLabel">
     <label for="rectifier"></label>Rectifier type:</label>
@@ -70,19 +69,11 @@ Change the system parameters in the interactive text boxes and pulldown menus be
     </select>
   </div>
 
-  <div class="variableSubTitle"> Plotting:  
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;Diode forward volt drop (V): <input type="text" id="Vfwd" value="!" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">Low plot freq. limit (Hz): <input type="text" id="fmin" class="textInput" onchange="updateHash()">
+  <div class="variableSubTitle"> Resonators: &nbsp;&nbsp;<a href="#resonatorCalculator"><img id="calculatorIcon" src="images/calculatorIcon.png"></a>  
   </div>
-  <div class="variableLabel">High plot freq. limit (Hz): <input type="text" id="fmax" value="90e3" class="textInput" onchange="updateHash()">
-  </div>
-  <div class="variableLabel">Number of data plot points: <input type="text" id="fnum" value="1000" class="textInput" onchange="updateHash()">
-  </div>
-</div>
-
-<div id="column2">
-  <div class="variableSubTitle"> Resonators:    
-  </div>
+ 
   <div class="variableLabel">Primary ind. <span style='font-family:Times New Roman'><i>L</i><sub>1</sub> </span> (H): <input type="text" id="L1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableLabel">Secondary ind. <span style='font-family:Times New Roman'><i>L</i><sub>2</sub> </span> (H): <input type="text" id="L2" value="3.7e-5" class="textInput" onchange="updateHash()">
@@ -97,7 +88,17 @@ Change the system parameters in the interactive text boxes and pulldown menus be
   </div>
   <div class="variableLabel">Coupling coefficient, <span style='font-family:Times New Roman'><i>k</i></span>  <input type="text" id="k" value=".21" class="textInput" onchange="updateHash()">
   </div>
+
+  <div class="variableSubTitle"> Plotting:  
+  </div>
+  <div class="variableLabel">Low plot freq. limit (Hz): <input type="text" id="fmin" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">High plot freq. limit (Hz): <input type="text" id="fmax" value="90e3" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">Number of data plot points: <input type="text" id="fnum" value="1000" class="textInput" onchange="updateHash()">
+  </div>
   <p></p>
+
 <button type="button" class="buttonStyle2" onclick="resetAll()">Reset</button>
 <button type="button" class = "buttonStyle2" onclick="buttonFunction(1)">Download output as CSV</button>
 <p></p>
@@ -105,77 +106,136 @@ Change the system parameters in the interactive text boxes and pulldown menus be
 
 </div>
 
-<div>
-  <div class="imageOverlay">
+
+
+<div id="main">
+
+
+<div class="heading">
+<h2>Calculator for inductive power transfer systems</h2> 
+Author: &nbsp; Aaron Scher (aaron.scher@oit.edu). <br>
+</div>
+
+<p><b>Directions:</b>  This is an online calculator to aid in the design of inductive power transfer (IPT) systems.
+Change the system parameters in left sidebar to generate updated frequency response plots. All AC magnitude values are peak (not RMS). Hover your cursor over a plot below to enable additional interactivity and options.</p>
+
+
+
+<div class="imageOverlay">
     <img id="sourceImage" class = "imageBasic">
     <img id="inverterImage" class="imageBasic imtip">
     <img id="couplerImage" class="imageBasic imtip">
     <img id="rectifierImage" class="imageBasic imtip">
     <img id="loadImage" class="imageBasic imtip">
-    </div>
-  </div>
 </div>
-  
+
+
+
 <br>
-<div id="resultsMessage"></div>   
-<div id="errorMessage"></div>
+<div id="resultsMessage">
+</div>   
+
+<div id="errorMessage">
+</div>
+
+
+
+
+
 <div class="grid-container-plots ">
   <div id="efficiencyPlot" class = "plotStyle" ></div>
   <div id="inputOutputPowerPlot" class = "plotStyle"></div>
-  <div id="powerLossPlot" class = "plotStyle"></div>
+  <div id="sourceLoadVoltagePlot" class="plotStyle"></div>
+  <div id="sourceLoadCurrentPlot" class="plotStyle"></div>
   <div id="acCurrentPlot" class="plotStyle"></div>
+  <div id="zinPhasePlot" class="plotStyle"></div>
+  <div id="zinMagPlot" class="plotStyle"></div>
+  <div id="powerLossPlot" class = "plotStyle"></div>
   <div id="loadResistancePlot" class="plotStyle"></div>
   <div id="capVoltPlot" class="plotStyle"></div>
   <div id="acVoltPlot" class="plotStyle"></div>
-  <div id="zinPhasePlot" class="plotStyle"></div>
-  <div id="zinMagPlot" class="plotStyle"></div>
-  <div id="sourceLoadVoltagePlot" class="plotStyle"></div>
-  <div id="sourceLoadCurrentPlot" class="plotStyle"></div>
+
+ 
 </div>
+
 
 
 <h2>Simplifying assumptions</h2>
 <p>This calculator makes the following simplifying assumpitons for analyzing the IPT system and generating the plots:
 <ul>
 
-<li><b>Lossless inverter FETs.</b> Ignore FET switching losses, on-resistance, parasitics and nonlinearities.</li>
-<li><b>Lossless rectifier diodes.</b> Ignore diode forward voltage drops, on-resistance, parasitics and nonlinearities.</li>
-<li><b>First-harmonic approximation.</b> Ignore higher-order harmonics.</li>
+<li><b>Simple inverter FET model</b> Only the on-resistances of the inverter FETs are considered.The calculator ignores other FET switching loss mechanisms, parasitics and nonlinearities.</li>
+<li><b>Simple diode model</b> Only diode forward voltage drops are considered.The calculator ignores other diode loss mechanisms, parasitics and nonlinearities.</li>
+<li><b>First-harmonic approximation.</b> The calculator ignores higher-order harmonics.</li>
+<li><b>Reactive component frequency dispersion ignored.</b> The calculator assumes the inductance, capacitance, and Q-factors of the resonators remain constant over the frequency range of interest.</li>
+<li><b>Stable equilibrium operation assumed.</b> Constant power loads can potentially cause instability. However, the calculator assumes the IPT system operates at stable equilibrium for all loading conditions.</li>
 </ul>
 </p>
 
-<h2>Q-factor discussion</h2>
-<p>
-In this work, <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> = (2&#960; <i>f</i><sub>01</sub><i>L</i><sub>1</sub>) &#8725; <i>R</i><sub>1</sub></span>  and <span style='font-family:Times New Roman'><i>Q</i><sub>2</sub> = (2&#960; <i>f</i><sub>02</sub></sub><i>L</i><sub>2</sub>) &#8725; <i>R</i><sub>2</sub></span> are the unloaded Q-factors of the primary and secondary resonators, respectively. Here, <span style='font-family:Times New Roman'><i>R</i><sub>1</sub></span> and <span style='font-family:Times New Roman'><i>R</i><sub>2</sub></span> denote the equivalent series resistances (ESRs) of the primary and secondary resonators, respectively. There are techniques and instruments you can use to measure the Q-factor of an LC resonator directly. However, you may be in a situation in which you only have the loss characteristics of L and C seperately. Then, how do you find the Q-factor? We will consider three common scenerios below. 
-</p>
-<p>
-<b>Scenerio 1:</b> 
-Suppose you know the individual ESRs of <span style='font-family:Times New Roman'><i>L</i><sub>1</sub></span> and <span style='font-family:Times New Roman'><i>C</i><sub>1</sub></span>, which we denote as <span style='font-family:Times New Roman'><i>R</i><sub><i>L</i><sub>1</sub></sub></span> and <span style='font-family:Times New Roman'><i>R</i><sub><i>C</i><sub>1</sub></sub></span>, respecively. In this case <span style='font-family:Times New Roman'><i>R</i><sub>1</sub></span> = <span style='font-family:Times New Roman'><i>R</i><sub><i>L</i><sub>1</sub></sub>+</span> <span style='font-family:Times New Roman'><i>R</i><sub><i>C</i><sub>1</sub></sub></span>, which can be substituted into the equation <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> = (2&#960; <i>f</i><sub>01</sub> </sub><i>L</i><sub>1</sub>) &#8725; <i>R</i><sub>1</sub></span>.
-</p>
+ 
 
-<p>
-<b>Scenerio 2:</b> 
-Suppose you know the individual unloaded Q-factors of <span style='font-family:Times New Roman'><i>L</i><sub>1</sub></span> and <span style='font-family:Times New Roman'><i>C</i><sub>1</sub></span>, which we can write as <span style='font-family:Times New Roman'><i>Q</i><sub><i>L</i><sub>1</sub></sub></span> and <span style='font-family:Times New Roman'><i>Q</i><sub><i>C</i><sub>1</sub></sub></span>, respecively. In this case, we can solve for <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub></span> via the well-known equation: 
 
-<span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> = (<i>Q</i><sub><i>L</i><sub>1</sub></sub><i>Q</i><sub><i>C</i><sub>1</sub></sub>) &#8725; (<i>Q</i><sub><i>L</i><sub>1</sub>+</sub><i>Q</i><sub><i>C</i><sub>1</sub></sub>)</span>.
-</p>
+<div id="resonatorCalculator">
+<h3>Ancillary calculator for finding the Q-factor and resonant frequency of an LC resonator</h3>
+<p> This ancillary calculator (contained within this box) computes the resonant frequency and Q-factor of a LC resonator (series or parallel). The inputs to the calculator are the inducatance, capacitance, and the individual loss characteristics of L and C. </p>
+<h4> Input data:
+</h4>
+<div class="LcCalculatorLabel">Inductance, <span style='font-family:Times New Roman'><i>L</i> </span> (H): <input type="text" id="LCalcInductance" value="37e-6" class="textInput">
+</div>
+<label for="indLossTypeCalc">Inductor loss specification:</label>
+  <select id="indLossTypeCalc" onchange="indLossTypeCalcFunction()" class="pullDownMenu">
+  <option value="1" class="textInput">Inductor's individual series resistance</option>
+  <option value="2" class="textInput">Inductor's individual quality factor</option>
+  <option value="3" class="textInput">Inductor's individual dissipation factor (tan&#948;)</option>
+  </select>
 
-<b>Scenerio 3:</b> 
-Suppose you know the individual ESR of <span style='font-family:Times New Roman'><i>L</i><sub>1</sub></span> (<span style='font-family:Times New Roman'><i>R</i><sub><i>L</i><sub>1</sub></sub></span>), while the loss of the capacitor is known in terms of the dissipation factor (<span style='font-family:Times New Roman'><i>DF</i></span>) or loss tangent <span style='font-family:Times New Roman'>tan(&#948;)</span>. Note that <span style='font-family:Times New Roman'><i>DF</i> = tan(&#948; </span>) is assumed to be a dimenstionless quanity. With this information we can solve for <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub></span> via the equation <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> = (<i>Q</i><sub><i>L</i><sub>1</sub></sub><i>Q</i><sub><i>C</i><sub>1</sub></sub>) &#8725; (<i>Q</i><sub><i>L</i><sub>1</sub>+</sub><i>Q</i><sub><i>C</i><sub>1</sub></sub>)</span>, where the individual unloaded Q-factors of the inductor and capacitor are <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> = (2&#960; <i>f</i><sub>01</sub> </sub><i>L</i><sub>1</sub>) &#8725; <i>R</i><sub><i>L</i><sub>1</sub></sub></span> and <span style='font-family:Times New Roman'><i>Q</i><sub><i>C</i><sub>1</sub></sub> = 1 &#8725; tan(&#948;) </span>, respectively.
+  <div class="LcCalculatorLabel"><label id ="lcCalcIndLossText"> &nbsp;&nbsp;&nbsp;Inductor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>L</sub> </span> (Ohm): </label><input type="text" id="LCalcLoss" value="40e-3" class="textInput">
+  
+  
+  </div>
+    <br>
+  <div class="LcCalculatorLabel">Capacitance, <span style='font-family:Times New Roman'><i>C</i> </span> (F): <input type="text" id="CCalcCapacitance" value="9.5e-8" class="textInput">
+  </div>
+  <label for="capLossTypeCalc">Capacitor loss specification:</label>
+  <select id="capLossTypeCalc" onchange="capLossTypeCalcFunction()" class="pullDownMenu">
+  <option value="1" class="textInput">Capacitors's individual series resistance</option>
+  <option value="2" class="textInput">Capacitor's individual quality factor</option>
+  <option value="3" class="textInput">Capacitor's individual dissipation factor (tan&#948;)</option>
+  </select>
+  <div class="LcCalculatorLabel"><label id ="lcCalcCapLossText">&nbsp;&nbsp;&nbsp;Capacitor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>C</sub> </span> (Ohm):</label> <input type="text" id="CCalcLoss" value="10e-3" class="textInput">
+  </div>
+  <br>
+<button type="button" class="buttonStyle3" onclick="calculateLCResonatorCalc()">Calculate</button>
+<button type="button" class = "buttonStyle3" onclick="populatePrimaryCalc()">Populate primary</button>
+<button type="button" class = "buttonStyle3" onclick="populateSecondaryCalc()">Populate secondary</button>
+<button type="button" class = "buttonStyle3" onclick="resetLCResonatorCalc()">Reset</button>
+<br>
+<br>
+Resonant frequency, <span style='font-family:Times New Roman'><i>f</i><sub>0</sub> </span> (Hz) = <input type="text" id="resFreqCalc" style='width: 70px;' class="textInput">
+<br>
+Q-factor at resonance, <span style='font-family:Times New Roman'><i>Q</i> = <input type="text" id="qCalc" style='width: 70px;' class="textInput">
+</div>
 
-</p>
+<h2>Contributions</h2>
+
+The author of this calculator is Aaron Scher (aaron.scher@oit.edu).
+Please contact me with your comments or if you find any bugs in the program or have suggestions for improvement. 
+I would like to thank Mostak Mohammad for his valuable feedback and helpful discussions.
 
 <h2>References</h2>
 <p>
 This calculator performs circuit analysis by finding the ABCD-parameters of the AC circuit and solving for unknown signals given the specified loading and source conditions. A discussion of constant power loads (i.e., "voltage driven" versus "current driven") are found in [1]. This calculator uses the transfer functions of inverters and rectifiers presented in [2] and [3]. A classic textbook that provides an in depth treatement of resonantors, Q factors, and related conversion formulas is [4]. 
 
-<ul style="list-style-type:none;">
+    
+<ul style="list-style-type:none; padding-left: 0;">
 <li>[1] A. D. Scher, M. Kos̆ík, P. Pham, D. Costinett and E. Hossain, "Stability Analysis and Efficiency Optimization of an Inductive Power Transfer System With a Constant Power Load," in IEEE Access, vol. 8, pp. 209762-209775, 2020.</li><br/>
 <li>[2] R. W. Erickson and D. Maksimoviä, Fundamentals of Power Electronics, Boston, MA, USA:Springer, 2001.</li><br/>
 <li>[3] M. K. Kazimierczuk and D. Czarkowski, Resonant Power Converters, Hoboken, NJ, USA:Wiley, 2011.</li><br/>
 <li>[4] H. L. Kraus, C. W. Bostian, F. H. Raab, Solid State Radio Engineering, New York, USA: Wiley, 1980.</li><br/>
 </ul>
 </p>
-</body>
+</div>
+</div>
+
 </html>
 

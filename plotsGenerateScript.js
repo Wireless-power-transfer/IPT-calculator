@@ -5,7 +5,7 @@ function plotGenFunction(
   freq,
   efficiency,
   P1,
-  P2,
+  PL,
   magV1,
   magI1,
   magV2,
@@ -26,7 +26,7 @@ function plotGenFunction(
 
   freq = freq.map((a) => a.toFixed(numSigFig));
   efficiency = efficiency.map((a) => a.toFixed(numSigFig));
-  P2 = P2.map((a) => a.toFixed(numSigFig));
+  PL = PL.map((a) => a.toFixed(numSigFig));
   Pl1 = Pl1.map((a) => a.toFixed(numSigFig));
   Pl2 = Pl2.map((a) => a.toFixed(numSigFig));
   magV2 = magV2.map((a) => a.toFixed(numSigFig));
@@ -85,7 +85,7 @@ function plotGenFunction(
         size: 14,
       },
     },
-    title: { text: "System power transfer efficiency" },
+    title: { text: "DC-to-DC power transfer efficiency" },
     margin: {
       l: lvalue,
       r: rvalue,
@@ -105,7 +105,7 @@ function plotGenFunction(
 
   var traceb = {
     x: freq,
-    y: P2,
+    y: PL,
     name: "<i>P<sub>L</sub></i>",
   };
 
@@ -139,7 +139,7 @@ function plotGenFunction(
         size: 14,
       },
     },
-    title: { text: "Input and output (load) powers" },
+    title: { text: "Source and load powers (DC)" },
     margin: {
       l: lvalue,
       r: rvalue,
@@ -349,7 +349,7 @@ function plotGenFunction(
         size: 14,
       },
     },
-    title: { text: "Voltage across capacitors (magnitude)" },
+    title: { text: "Capacitor voltage (magnitude)" },
     margin: {
       l: lvalue,
       r: rvalue,

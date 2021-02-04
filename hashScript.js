@@ -45,6 +45,8 @@ var hashNames = [
   "Q2",
   "f01",
   "f02",
+  "Ron",
+  "Vfwd",
 ];
 
 //These are the default values of the id names saved in the variable hashNames
@@ -55,16 +57,18 @@ var hashDefaultValues = [
   "2",
   "75e3",
   "95e3",
-  "1000",
+  "250",
   "500",
   "5",
   "0.21",
-  "3.7e-5",
-  "3.7e-5",
+  "37e-6",
+  "37e-6",
   "400",
   "400",
   "85e3",
   "85e3",
+  "30e-3",
+  "0.4",
 ];
 
 //Set the default hash string
@@ -87,7 +91,7 @@ function setDefaultHash() {
 function extractCurrentHashAndSetAllHtmlIdValues() {
   let hash = getHashValue(); //Get value of the hash (i.e., URL anchor)
   let hashArray = hash.split("&");
-  if (hashArray.length !== 16) {
+  if (hashArray.length !== hashNames.length) {
     //Make sure the length of the hash array is what we expect (which is 16 for our parcicular case.)
     setDefaultHash(); //If the length of the hash array is not what we expect then there is an error and we therefore set the default hash.
   } else {

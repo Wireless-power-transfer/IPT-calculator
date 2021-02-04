@@ -1,11 +1,88 @@
 /* Author: Aaron Scher
  */
+ html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 14pt;
 /*   border: 1px solid black; /* width, style, colour */
- */  padding: 20px;
-  margin: 10px; 
+ padding: 15px;
+  margin: 0; 
+
+}
+
+#main{
+    margin-left: 340px; 
+    transition: margin-left .5s;
+}
+
+/* https://www.w3schools.com/howto/howto_js_collapse_sidebar.asp
+ */
+ 
+ .sideBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100%;
+  background: rgb(245,245,245);
+  overflow-y: auto;
+  overflow: scroll; 
+  padding: 5px; 
+  transition: 0.3s;
+
+  /* new things: */
+  overflow-x: hidden;
+  transition: 0.5s; 
+}
+
+/* New thing: Position and style the close button (top right corner) */
+ .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+  color: black; 
+} 
+
+/* New thing: Position and style the close button (top right corner) */
+
+/* The button used to open the sidebar */
+.openbtn {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  left: 340px;
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  z-index: 1;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
 
 .imageOverlay {
@@ -20,16 +97,12 @@ body {
 }
 
 .imageBasic {
-  max-width: 100%;
+   max-width: 600px; 
+  width: 100%;
+  object-fit: contain; 
   height: auto; 
 }
 
-@media screen and (min-width: 700px) {
-  .imageBasic {
-    object-fit: contain;
-    width: 700px;
-  }
-}
 
 #grid-container-inputs{
   display: flex;
@@ -90,9 +163,12 @@ body {
 .grid-container-plots {
   justify-content: start;
   display: grid;
-  grid-template-columns: repeat( auto-fit, minmax(18rem, 1fr) );
-  grid-auto-rows: 20rem;
-  padding: 0.5rem;
+ grid-template-columns: repeat(auto-fill, 300px);
+}
+
+.plotStyle {
+  width: 300px; 
+  height: 320px; 
 }
 
 .buttonStyle2 {
@@ -106,7 +182,8 @@ body {
   border: none;
   padding: 10px 10px;    
   border-radius: 10px;
-  box-shadow: 0 4px #999; */
+  box-shadow: 0 4px #999;
+  outline: none; 
 }
 
 .buttonStyle2:hover {
@@ -122,5 +199,62 @@ body {
 
 .equationStyle {
   font-family: 'Times New Roman', Times, serif;
+}
+
+#resultsMessage{
+font-family:'Times New Roman', Times, serif
+}
+
+#calculatorIcon{
+  width: 20px;
+  padding: 0; 
+  vertical-align:middle;
+  transition: width .2s;
+}
+
+#calculatorIcon:hover{
+  width: 23px;
+}
+
+
+#resonatorCalculator{
+    display:in-block;
+  box-sizing: border-box;
+  border: 2px solid darkolivegreen;
+  border-radius: 25px;
+  margin: 20px;
+  margin-left: 10px;
+  margin-right: 10px; 
+  padding: 23px; 
+  padding-top: 0; 
+
+}
+
+
+
+.buttonStyle3 {
+  display: inline-block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px; 
+ border:0.15em solid #CCCCCC;
+  font-weight:400;
+  font-size: 15px;
+  color:#000000;
+  padding:0.3em 1.45em;    
+  border-radius: 10px;
+  text-align:center;
+  position: relative;
+ outline: none; 
+ /*  font-family:'Segoe UI','Roboto',sans-serif; */ */
+}
+
+.buttonStyle3:hover {
+  border-color:#7a7a7a;
+
+}
+
+.buttonStyle3:active {
+  background-color:#999999;
 }
 
