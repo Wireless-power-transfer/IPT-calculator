@@ -112,6 +112,7 @@ function resetLCResonatorCalc() {
 
 //This function is called when the populate primary button is pressed. The purpose of this function is to copy the f0 and Q outputs of the ancillary calculator and paste these values into Q1 and f01 textboxes of the main calculator.
 function populatePrimaryCalc() {
+  console.log("hi");
   let f0 = document.getElementById("resFreqCalc").value; //Get resonant frequency
   let Q = document.getElementById("qCalc").value; //Get Q
   let L = document.getElementById("LCalcInductance").value; //Get inductance
@@ -119,6 +120,8 @@ function populatePrimaryCalc() {
   document.getElementById("L1").value = L;
   document.getElementById("Q1").value = Q;
   document.getElementById("f01").value = f0;
+
+  updateHash();
 }
 
 //This function is called when the populate secondary button is pressed. The purpose of this function is to copy the f02 and Q2 outputs of the ancillary calculator and paste these values into Q and f0 textboxes of the main calculator.
@@ -130,4 +133,5 @@ function populateSecondaryCalc() {
   document.getElementById("L2").value = L;
   document.getElementById("Q2").value = Q;
   document.getElementById("f02").value = f0;
+  buttonFunction();
 }
