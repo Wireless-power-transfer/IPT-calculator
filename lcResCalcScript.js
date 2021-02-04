@@ -133,5 +133,5 @@ function populateSecondaryCalc() {
   document.getElementById("L2").value = L;
   document.getElementById("Q2").value = Q;
   document.getElementById("f02").value = f0;
-  buttonFunction();
+  updateHash();
 }
