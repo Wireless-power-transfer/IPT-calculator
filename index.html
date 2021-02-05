@@ -4,14 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="mainCSS.css">
-  <script src="https://unpkg.com/mathjs@9.0.0/lib/browser/math.js"></script> <!-- load Mathjs library-->
-  <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Plotly library-->
-  <script type="text/javascript" src="mainScript.js"></script> <!-- Contains the main custom js functions and objects that analyzes the circuit-->
-  <script type="text/javascript" src="plotsGenerateScript.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
-  <script type="text/javascript" src="setImageScript.js"></script> <!-- Contains custom js function for generating the png image of the system-->
-  <script type="text/javascript" src="hashScript.js"></script> <!-- Contains custom js functions for working with the URL hash string-->
-  <script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
-
+  
   <!-- Author: Aaron Scher-->
 
   </head>
@@ -76,8 +69,24 @@
  
   <div class="variableLabel">Primary ind. <span style='font-family:Times New Roman'><i>L</i><sub>1</sub> </span> (H): <input type="text" id="L1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>L1</sub> </span> (Ohm): <input type="text" id="RL1" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">Primary cap. <span style='font-family:Times New Roman'><i>C</i><sub>1</sub> </span> (F): <input type="text" id="C1" value="9.48e-5" class="textInput" onchange="updateHash()">
+  </div>
+ <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>C1</sub> </span> (Ohm): <input type="text" id="RC1" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
   <div class="variableLabel">Secondary ind. <span style='font-family:Times New Roman'><i>L</i><sub>2</sub> </span> (H): <input type="text" id="L2" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>L2</sub> </span> (Ohm): <input type="text" id="RL2" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">Secondary cap. <span style='font-family:Times New Roman'><i>C</i><sub>2</sub> </span> (F): <input type="text" id="C2" value="1e-3" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>C2</sub> </span> (Ohm): <input type="text" id="RC2" value="1e-3" class="textInput" onchange="updateHash()">
+  </div>
+
+
+
+<!-- 
   <div class="variableLabel">Primary Q-factor <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> </span>: <input type="text" id="Q1" value="400" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableLabel">Secondary Q-factor <span style='font-family:Times New Roman'><i>Q</i><sub>2</sub> </span>: <input type="text" id="Q2" value="400" class="textInput" onchange="updateHash()">
@@ -85,7 +94,7 @@
   <div class="variableLabel">Primary res. freq.&nbsp;<span style='font-family:Times New Roman'><i>f</i><sub>01</sub> </span> (Hz): <input type="text" id="f01" value="85e3" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableLabel">Secondary res. freq.&nbsp;<span style='font-family:Times New Roman'><i>f</i><sub>02</sub> </span> (Hz): <input type="text" id="f02" value="85e3" class="textInput" onchange="updateHash()">
-  </div>
+  </div> -->
   <div class="variableLabel">Coupling coefficient, <span style='font-family:Times New Roman'><i>k</i></span>  <input type="text" id="k" value=".21" class="textInput" onchange="updateHash()">
   </div>
 
@@ -99,8 +108,8 @@
   </div>
   <p></p>
 
-<button type="button" class="buttonStyle2" onclick="resetAll()">Reset</button>
-<button type="button" class = "buttonStyle2" onclick="buttonFunction(1)">Download output as CSV</button>
+<button type="button" class="buttonStyle1" onclick="resetAll()">Reset</button>
+<button type="button" class = "buttonStyle1" onclick="buttonFunction(1)">Download output as CSV</button>
 <p></p>
 
 
@@ -176,44 +185,63 @@ Change the system parameters in left sidebar to generate updated frequency respo
 
 
 <div id="resonatorCalculator">
-<h3>Ancillary calculator for finding the Q-factor and resonant frequency of an LC resonator</h3>
-<p> This ancillary calculator (contained within this box) computes the resonant frequency and Q-factor of a LC resonator (series or parallel). The inputs to the calculator are the inducatance, capacitance, and the individual loss characteristics of L and C. </p>
-<h4> Input data:
-</h4>
-<div class="LcCalculatorLabel">Inductance, <span style='font-family:Times New Roman'><i>L</i> </span> (H): <input type="text" id="LCalcInductance" value="37e-6" class="textInput">
-</div>
+<h3>Ancillary LC resonator calculator</h3>
+<p> This ancillary calculator (contained within this box) computes the resonant frequency and equivalent series resistances (ESRs) for a lossy LC resonator (series or parallel).</p>
+<b>Component values and resonant frequency:</b><br>
+</br>
+
+Choose two values below by checking the radio button to its side. Press calculate to solve for the other value.<br><br>
+  <input type="radio" id="A" checked onclick="clickA()">Inductance, <span style='font-family:Times New Roman'><i>L</i> </span> (H): <input type="text" id="LCalcInductance" value="37e-6" class="textInput">
+<br>
+  <input type="radio" id="B" checked onclick="clickB()">Capacitance, <span style='font-family:Times New Roman'><i>C</i> </span> (F): <input type="text" id="CCalcCapacitance" value="9.5e-8" class="textInput">
+<br>
+  <input type="radio" id="C" unchecked onclick="clickC()">Resonant frequency, <span style='font-family:Times New Roman'><i>f</i><sub>0</sub> </span> (Hz) = <input type="text" id="resFreqCalc" style='width: 70px;' class="textInput">
+</br>
+
+</br>
+<b>Component losses</b><br>
+</br>
+Select the loss of the inductor and capacitor below. Press calculate to find the individual ESRs and unloaded Q-factor. 
+<br><br>
 <label for="indLossTypeCalc">Inductor loss specification:</label>
   <select id="indLossTypeCalc" onchange="indLossTypeCalcFunction()" class="pullDownMenu">
-  <option value="1" class="textInput">Inductor's individual series resistance</option>
-  <option value="2" class="textInput">Inductor's individual quality factor</option>
-  <option value="3" class="textInput">Inductor's individual dissipation factor (tan&#948;)</option>
+  <option value="1" class="textInput">Inductor ESR</option>
+  <option value="2" class="textInput">Inductor Q-factor at resonance</option>
+  <option value="3" class="textInput">Inductor dissipation factor (tan&#948;) at resonance</option>
   </select>
 
-  <div class="LcCalculatorLabel"><label id ="lcCalcIndLossText"> &nbsp;&nbsp;&nbsp;Inductor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>L</sub> </span> (Ohm): </label><input type="text" id="LCalcLoss" value="40e-3" class="textInput">
-  
-  
+  <div class="LcCalculatorLabel"><label id ="lcCalcIndLossText"> &nbsp;&nbsp;&nbsp;Inductor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>L</sub> </span> (Ohm): </label><input type="text" id="LCalcLoss" value="45e-3" class="textInput">
+
   </div>
-    <br>
-  <div class="LcCalculatorLabel">Capacitance, <span style='font-family:Times New Roman'><i>C</i> </span> (F): <input type="text" id="CCalcCapacitance" value="9.5e-8" class="textInput">
-  </div>
+  
+
   <label for="capLossTypeCalc">Capacitor loss specification:</label>
   <select id="capLossTypeCalc" onchange="capLossTypeCalcFunction()" class="pullDownMenu">
-  <option value="1" class="textInput">Capacitors's individual series resistance</option>
-  <option value="2" class="textInput">Capacitor's individual quality factor</option>
-  <option value="3" class="textInput">Capacitor's individual dissipation factor (tan&#948;)</option>
+  <option value="1" class="textInput">Capacitor ESR</option>
+  <option value="2" class="textInput">Capacitor Q-factor at resonance</option>
+  <option value="3" class="textInput">Capacitor dissipation factor (tan&#948;) at resonance</option>
   </select>
-  <div class="LcCalculatorLabel"><label id ="lcCalcCapLossText">&nbsp;&nbsp;&nbsp;Capacitor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>C</sub> </span> (Ohm):</label> <input type="text" id="CCalcLoss" value="10e-3" class="textInput">
+  <div class="LcCalculatorLabel"><label id ="lcCalcCapLossText">&nbsp;&nbsp;&nbsp;Capacitor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>C</sub> </span> (Ohm):</label> <input type="text" id="CCalcLoss" value="1e-3" class="textInput">
   </div>
   <br>
-<button type="button" class="buttonStyle3" onclick="calculateLCResonatorCalc()">Calculate</button>
-<button type="button" class = "buttonStyle3" onclick="populatePrimaryCalc()">Populate primary</button>
-<button type="button" class = "buttonStyle3" onclick="populateSecondaryCalc()">Populate secondary</button>
-<button type="button" class = "buttonStyle3" onclick="resetLCResonatorCalc()">Reset</button>
+<button type="button" class="buttonStyle2" onclick="calculateLCResonatorCalc()">Calculate</button>
+<button type="button" class = "buttonStyle2" onclick="populatePrimaryCalc()">Populate primary</button>
+<button type="button" class = "buttonStyle2" onclick="populateSecondaryCalc()">Populate secondary</button>
+<!-- <button type="button" id = "resetButtonAncillaryCalc" class = "buttonStyle2" onclick="resetLCResonatorCalc()">Reset</button>
+ -->
+<button type="button" id = "resetButton2" class = "buttonStyle2">Reset</button>
+
+
+
 <br>
+<div id = "QfactorMessage">
+</div>
+
+Inductor ESR <span style='font-family:Times New Roman'><i>R</i><sub>L</sub></span> = <input type="text" id="RLCalc" style='width: 70px;' class="textInput">
 <br>
-Resonant frequency, <span style='font-family:Times New Roman'><i>f</i><sub>0</sub> </span> (Hz) = <input type="text" id="resFreqCalc" style='width: 70px;' class="textInput">
-<br>
-Q-factor at resonance, <span style='font-family:Times New Roman'><i>Q</i> = <input type="text" id="qCalc" style='width: 70px;' class="textInput">
+Capacitor ESR <span style='font-family:Times New Roman'><i>R</i><sub>C</sub></span> = <input type="text" id="RCCalc" style='width: 70px;' class="textInput">
+
+
 </div>
 
 <h2>Contributions</h2>
@@ -237,5 +265,27 @@ This calculator performs circuit analysis by finding the ABCD-parameters of the 
 </div>
 </div>
 
+<script src="https://unpkg.com/mathjs@9.0.0/lib/browser/math.js"></script> <!-- load Mathjs library-->
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Plotly library-->  
+<script type="text/javascript" src="mainScript.js"></script> <!-- Contains the main custom js functions and objects that analyzes the circuit-->
+<script type="text/javascript" src="plotsGenerateScript.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
+<script type="text/javascript" src="setImageScript.js"></script> <!-- Contains custom js function for generating the png image of the system-->
+<script type="text/javascript" src="hashScript.js"></script> <!-- Contains custom js functions for working with the URL hash string-->
+<script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
+
+</body>
 </html>
+
+
+
+<!-- To update (add/subtract/modify) values to the sidebar: 
+1. First update hashScript.js ... namely update the following variables:
+hashNames 
+hashDefaultValues
+
+2. Update buttonFunction() in mainScript.js where we get the values from the sidebar using document.getElementById
+
+3. Update resultsMessage in mainScript.js as needed 
+
+-->
 

@@ -41,12 +41,14 @@ var hashNames = [
   "k",
   "L1",
   "L2",
-  "Q1",
-  "Q2",
-  "f01",
-  "f02",
   "Ron",
   "Vfwd",
+  "RL1",
+  "RL2",
+  "RC1",
+  "RC2",
+  "C1",
+  "C2",
 ];
 
 //These are the default values of the id names saved in the variable hashNames
@@ -63,12 +65,14 @@ var hashDefaultValues = [
   "0.21",
   "37e-6",
   "37e-6",
-  "400",
-  "400",
-  "85e3",
-  "85e3",
   "30e-3",
   "0.4",
+  "45e-3",
+  "45e-3",
+  "1e-3",
+  "1e-3",
+  "9.5e-8",
+  "9.5e-8",
 ];
 
 //Set the default hash string

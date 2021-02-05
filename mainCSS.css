@@ -171,7 +171,7 @@ body {
   height: 320px; 
 }
 
-.buttonStyle2 {
+.buttonStyle1 {
   display: block
   margin-top: 5px;
   margin-bottom: 5px;
@@ -186,12 +186,12 @@ body {
   outline: none; 
 }
 
-.buttonStyle2:hover {
+.buttonStyle1:hover {
   background-color: #3e8e41;
   border: none;
 }
 
-.buttonStyle2:active {
+.buttonStyle1:active {
   background-color: #3e8e41;
  box-shadow: 0 3px #666;
   transform: translateY(3px);
@@ -232,7 +232,7 @@ font-family:'Times New Roman', Times, serif
 
 
 
-.buttonStyle3 {
+.buttonStyle2 {
   display: inline-block;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -249,12 +249,12 @@ font-family:'Times New Roman', Times, serif
  /*  font-family:'Segoe UI','Roboto',sans-serif; */ */
 }
 
-.buttonStyle3:hover {
+.buttonStyle2:hover {
   border-color:#7a7a7a;
 
 }
 
-.buttonStyle3:active {
+.buttonStyle2:active {
   background-color:#999999;
 }
 

@@ -160,14 +160,13 @@ function buttonFunction(genCSV) {
   let loadValue_RL_VL_IL_PL = Number(
     document.getElementById("RL_VL_IL_PL").value
   ); //new
-
   let k = Number(document.getElementById("k").value); //coupling coefficient
   let L1 = Number(document.getElementById("L1").value); //primary inductance
   let L2 = Number(document.getElementById("L2").value); //secondary inductance
-  let Q1 = Number(document.getElementById("Q1").value); //quality factor Q1 (primary)
-  let Q2 = Number(document.getElementById("Q2").value); //quality factor Q2 (secondary)
-  let f01 = Number(document.getElementById("f01").value); //primary resonant frequency
-  let f02 = Number(document.getElementById("f02").value); //secondary resonant frequency
+  /*   let Q1 = Number(document.getElementById("Q1").value); //quality factor Q1 (primary)
+  let Q2 = Number(document.getElementById("Q2").value); //quality factor Q2 (secondary) */
+  /*   let f01 = Number(document.getElementById("f01").value); //primary resonant frequency
+  let f02 = Number(document.getElementById("f02").value); //secondary resonant frequency */
   let fmin = Number(document.getElementById("fmin").value); //minimum frequency to plot
   let fmax = Number(document.getElementById("fmax").value); //maximun frequency to plot
   let fnum = Number(document.getElementById("fnum").value); //number of frequency points in plot
@@ -175,12 +174,46 @@ function buttonFunction(genCSV) {
   let rectConst = Number(document.getElementById("rectifier").value); //rectConst = 1 (half bridge) and =2 (full bridge)
   let Ron = Number(document.getElementById("Ron").value); //MOSFET on resistance
   let Vfwd = Number(document.getElementById("Vfwd").value); //diode forward voltage
+  let RL1 = Number(document.getElementById("RL1").value); //ESR of L1
+  let RL2 = Number(document.getElementById("RL2").value); //ESR of L2
+  let C1 = Number(document.getElementById("C1").value); //C1
+  let C2 = Number(document.getElementById("C2").value); //C2
+  let RC1 = Number(document.getElementById("RC1").value); //ESR of L1
+  let RC2 = Number(document.getElementById("RC2").value); //ESR of L2
 
   //Calculate and define other parameters and variables:
-  let R1 = (2 * math.pi * f01 * L1) / Q1 + Ron * invConst; //compute R1 (ESR of primary)
-  let R2 = (2 * math.pi * f02 * L2) / Q2; //compute R2 (ESR of secndary)
-  let C1 = 1 / (2 * math.pi * f01) ** 2 / L1; //compute C1 (primary)
-  let C2 = 1 / (2 * math.pi * f02) ** 2 / L2; //compute C2 (secondary)
+  let f01 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequenc of primary
+  let f02 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequency of secondary
+  let QL1 = (2 * math.pi * f01 * L1) / RL1; //Unloaded Q of L1
+  let QL2 = (2 * math.pi * f02 * L2) / RL2; //Unloaded Q of L2
+  let QC1 = 1 / (2 * math.pi * f01 * C1) / RC1; //Unloaded Q of C1
+  let QC2 = 1 / (2 * math.pi * f02 * C2) / RC2; //Unloaded Q of C2
+
+  //To avoid Infinities due to dividing by zero:
+  if (RL1 == 0) {
+    QL1 = 1e200;
+  }
+  if (RL2 == 0) {
+    QL2 = 1e200;
+  }
+  if (RC1 == 0) {
+    QC1 = 1e200;
+  }
+  if (RC2 == 0) {
+    QC2 = 1e200;
+  }
+
+  let Q1 = (QL1 * QC1) / (QL1 + QC1); //Q of primary
+  let Q2 = (QL2 * QC2) / (QL2 + QC2); //Q of secondary
+
+  //calculate AC equivalent value of MOSFET Ron"
+  let RonACeq = Ron * invConst;
+
+  /*   let R1 = (2 * math.pi * f01 * L1) / Q1 + Ron * invConst; //compute R1 (ESR of primary)
+  let R2 = (2 * math.pi * f02 * L2) / Q2; //compute R2 (ESR of secndary) */
+  /*   let C1 = 1 / (2 * math.pi * f01) ** 2 / L1; //compute C1 (primary)
+  let C2 = 1 / (2 * math.pi * f02) ** 2 / L2; //compute C2 (secondary) */
+
   let delta_f = (fmax - fmin) / (fnum - 1); //frequency step size
   let freq = []; //define frequency variable as an array
   let M = k * math.sqrt(L1 * L2); //calculate mutual inductance
@@ -195,10 +228,6 @@ function buttonFunction(genCSV) {
   let P1 = []; //initialize input power
   let P2 = []; //initialize output power
   let efficiency = []; //initialize power transfer efficiency
-  let seriesPrimary = new SeriesElement(L1, C1, R1, []); //create series primary object
-  let seriesSecondary = new SeriesElement(L2, C2, R2, []); //create series secondary object
-  let SSIPT_System = new TotalIPTSystem(); //create total IPT system object
-  let Kinverter = new KinverterElement([]); //create K inverter object
   let K = []; //initialize K value
   let Pl1 = []; //power loss in primary resonator
   let Pl2 = []; //power loss in secondary resonator
@@ -219,6 +248,16 @@ function buttonFunction(genCSV) {
   let PL = []; //power delivered to DC load
   let = specialOutputMessage = []; //special output message that appears after the calculate and plot button is pressed
 
+  //TEMPORARY
+  let R1 = RL1 + RC1;
+  let R2 = RL2 + RC2;
+
+  let seriesRon = new SeriesR(RonACeq, []); //create Ron object
+  let seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
+  let seriesSecondary = new SeriesLCR(L2, C2, R2, []); //create series secondary object
+  let SSIPT_System = new TotalIPTSystem(); //create total IPT system object
+  let Kinverter = new KinverterElement([]); //create K inverter object
+
   let mNum = 3; //Number of times to iterate over diode
   // Analyze circuit at each frequency using ABCD matrices
   for (let i = 0; i < fnum; i++) {
@@ -226,6 +265,9 @@ function buttonFunction(genCSV) {
     SSIPT_System.etaDiode = etaDiode;
     for (let m = 0; m < mNum; m++) {
       freq[i] = fmin + delta_f * i; //evaluate frequency at index i
+
+      seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+      seriesRon.createABCD(); //create ABCD matrix that models series primary object
       seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
       seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
       seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
@@ -235,6 +277,7 @@ function buttonFunction(genCSV) {
       Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
 
       systemABCDmatrix = math.multiply(
+        seriesRon.ABCD,
         seriesPrimary.ABCD,
         Kinverter.ABCD,
         seriesSecondary.ABCD
@@ -312,17 +355,17 @@ function buttonFunction(genCSV) {
   }
 
   document.getElementById("resultsMessage").innerHTML =
-    "Calculated: <span class = 'equationStyle'><i>C</i><sub>1</sub></span> = " +
-    math.format(C1, 3) +
-    " F, <span class = 'equationStyle'><i>C</i><sub>2</sub></span> = " +
-    math.format(C2, 3) +
-    " F, " +
-    "<span class = 'equationStyle'><i>R</i><sub>1</sub></span> = " +
-    math.format(R1, 3) +
-    " Ohm, " +
-    "<span class = 'equationStyle'><i>R</i><sub>2</sub></span> = " +
-    math.format(R2, 3) +
-    " Ohm, " +
+    "Calculated: <span class = 'equationStyle'><i>f</i><sub>01</sub></span> = " +
+    math.format(f01, 3) +
+    " Hz, <span class = 'equationStyle'><i>f</i><sub>02</sub></span> = " +
+    math.format(f02, 3) +
+    " Hz, " +
+    "<span class = 'equationStyle'><i>Q</i><sub>1</sub></span> = " +
+    math.format(Q1, 3) +
+    ", " +
+    "<span class = 'equationStyle'><i>Q</i><sub>2</sub></span> = " +
+    math.format(Q2, 3) +
+    ", " +
     "<span class = 'equationStyle'><i>M</i></span> = " +
     math.format(M, 3) +
     " H. " +
@@ -355,7 +398,27 @@ function buttonFunction(genCSV) {
 }
 
 //Create the objects
-class SeriesElement {
+
+class SeriesR {
+  constructor(R, f) {
+    this.R = R;
+    this.f = f;
+    this.ABCD = [];
+  }
+  createABCD() {
+    let w = 2 * math.pi * this.f;
+    let A = 1;
+    let B = this.R;
+    let C = 0;
+    let D = 1;
+    this.ABCD = math.matrix([
+      [A, B],
+      [C, D],
+    ]);
+  }
+}
+
+class SeriesLCR {
   constructor(L, C, R, f) {
     this.L = L;
     this.C = C;
