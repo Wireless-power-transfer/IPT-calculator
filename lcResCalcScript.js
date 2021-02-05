@@ -138,9 +138,7 @@ let calculateLCResonatorCalc = () => {
 
   //Update Q-factor message:
   document.getElementById("QfactorMessage").innerHTML =
-    "<br> Unloaded resonator Q-factor = " +
-    Q.toPrecision(numSigFig) +
-    "<br><br>";
+    "<br> Unloaded resonator Q-factor = " + Q.toPrecision(numSigFig) + "<br>";
 };
 
 //this function is called when the reset button is presed. it resets all the values in the textboxes to their default values
