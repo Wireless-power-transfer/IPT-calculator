@@ -67,6 +67,43 @@
   <div class="variableSubTitle"> Resonators: &nbsp;&nbsp;<a href="#resonatorCalculator"><img id="calculatorIcon" src="images/calculatorIcon.png"></a>  
   </div>
  
+   <div class="variableLabel">
+    <label for="compensation"></label>Compensation:</label>
+    <select name="compensation" id="compensation" class="pullDownMenu" onchange="updateHash()"> 
+      <option value="1" >Series-series</option>
+      <option value="2" >Series-parallel</option>
+      <option value="3" >LCC-series</option>
+      <option value="4" >LCC-LCC</option>
+    </select>
+  </div>
+
+  <div id = "lccSeriesButtonDisplayArea"> 
+    <div class="variableLabel">Primary LCC ind. <span style='font-family:Times New Roman'><i>L</i><sub>f1</sub> </span> (H): <input type="text" id="Lf1" value="3.7e-5" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Lf1</sub> </span> (Ohm): <input type="text" id="RLf1" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+
+    <div class="variableLabel">Primary LCC cap. <span style='font-family:Times New Roman'><i>C</i><sub>f1</sub> </span> (F): <input type="text" id="Cf1" value="3.7e-5" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Cf1</sub> </span> (Ohm): <input type="text" id="RCf1" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+
+
+
+  </div>
+
+   <div id = "lccLCCButtonDisplayArea"> 
+     <div class="variableLabel">Secondary LCC ind. <span style='font-family:Times New Roman'><i>L</i><sub>f2</sub> </span> (H): <input type="text" id="Lf2" value="3.7e-5" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Lf2</sub> </span> (Ohm): <input type="text" id="RLf2" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+
+    <div class="variableLabel">Secondary LCC cap. <span style='font-family:Times New Roman'><i>C</i><sub>f2</sub> </span> (F): <input type="text" id="Cf2" value="3.7e-5" class="textInput" onchange="updateHash()">
+  </div>
+  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Cf2</sub> </span> (Ohm): <input type="text" id="RCf2" value="45e-3" class="textInput" onchange="updateHash()">
+  </div>
+</div>
+
   <div class="variableLabel">Primary ind. <span style='font-family:Times New Roman'><i>L</i><sub>1</sub> </span> (H): <input type="text" id="L1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>L1</sub> </span> (Ohm): <input type="text" id="RL1" value="45e-3" class="textInput" onchange="updateHash()">
@@ -84,17 +121,6 @@
   <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>C2</sub> </span> (Ohm): <input type="text" id="RC2" value="1e-3" class="textInput" onchange="updateHash()">
   </div>
 
-
-
-<!-- 
-  <div class="variableLabel">Primary Q-factor <span style='font-family:Times New Roman'><i>Q</i><sub>1</sub> </span>: <input type="text" id="Q1" value="400" class="textInput" onchange="updateHash()">
-  </div>
-  <div class="variableLabel">Secondary Q-factor <span style='font-family:Times New Roman'><i>Q</i><sub>2</sub> </span>: <input type="text" id="Q2" value="400" class="textInput" onchange="updateHash()">
-  </div>
-  <div class="variableLabel">Primary res. freq.&nbsp;<span style='font-family:Times New Roman'><i>f</i><sub>01</sub> </span> (Hz): <input type="text" id="f01" value="85e3" class="textInput" onchange="updateHash()">
-  </div>
-  <div class="variableLabel">Secondary res. freq.&nbsp;<span style='font-family:Times New Roman'><i>f</i><sub>02</sub> </span> (Hz): <input type="text" id="f02" value="85e3" class="textInput" onchange="updateHash()">
-  </div> -->
   <div class="variableLabel">Coupling coefficient, <span style='font-family:Times New Roman'><i>k</i></span>  <input type="text" id="k" value=".21" class="textInput" onchange="updateHash()">
   </div>
 
@@ -129,15 +155,33 @@ Author: &nbsp; Aaron Scher (aaron.scher@oit.edu). <br>
 Change the system parameters in left sidebar to generate updated frequency response plots. All AC magnitude values are peak (not RMS). Hover your cursor over a plot below to enable additional interactivity and options.</p>
 
 
-
-<div class="imageOverlay">
+<!-- <div class="imageOverlay">
     <img id="sourceImage" class = "imageBasic">
     <img id="inverterImage" class="imageBasic imtip">
     <img id="couplerImage" class="imageBasic imtip">
     <img id="rectifierImage" class="imageBasic imtip">
     <img id="loadImage" class="imageBasic imtip">
-</div>
+</div> -->
 
+
+
+<div class="imageRow">
+  <div class="imageColumn">
+   <img id="sourceImage" class = "image">
+  </div>
+  <div class="imageColumn">
+    <img id="inverterImage" class="image">
+  </div>
+  <div class="imageColumn">
+    <img id="couplerImage" class="image"> 
+  </div>
+  <div class="imageColumn">
+      <img id="rectifierImage" class="image">
+  </div>
+    <div class="imageColumn">
+      <img id="loadImage" class="image">
+  </div>
+</div>
 
 
 <br>
@@ -152,18 +196,23 @@ Change the system parameters in left sidebar to generate updated frequency respo
 
 
 <div class="grid-container-plots ">
+
   <div id="efficiencyPlot" class = "plotStyle" ></div>
   <div id="inputOutputPowerPlot" class = "plotStyle"></div>
   <div id="sourceLoadVoltagePlot" class="plotStyle"></div>
   <div id="sourceLoadCurrentPlot" class="plotStyle"></div>
+  <div id="loadResistancePlot" class="plotStyle"></div>
   <div id="acCurrentPlot" class="plotStyle"></div>
+  <div id="acVoltPlot" class="plotStyle"></div>
   <div id="zinPhasePlot" class="plotStyle"></div>
   <div id="zinMagPlot" class="plotStyle"></div>
-  <div id="powerLossPlot" class = "plotStyle"></div>
-  <div id="loadResistancePlot" class="plotStyle"></div>
-  <div id="capVoltPlot" class="plotStyle"></div>
-  <div id="acVoltPlot" class="plotStyle"></div>
-
+  <div id="capacitorVoltPlot" class="plotStyle"></div>
+  <div id="inverterRectifierPowerLossPlot" class="plotStyle"></div>
+  <div id="capacitorPowerLossPlot" class = "plotStyle"></div>
+  <div id="inductorPowerLossPlot" class = "plotStyle"></div>
+  <div id="inductorCurrentPlot" class="plotStyle"></div>
+  
+  <div id="capacitorCurrentPlot" class="plotStyle"></div>
  
 </div>
 
@@ -185,8 +234,8 @@ Change the system parameters in left sidebar to generate updated frequency respo
 
 
 <div id="resonatorCalculator">
-<h3>Ancillary LC resonator calculator</h3>
-<p> This ancillary calculator (contained within this box) computes the resonant frequency and equivalent series resistances (ESRs) for a lossy LC resonator (series or parallel).</p>
+<h3>LC resonator calculator</h3>
+<p> This small calculator (contained within this box) computes the resonant frequency and equivalent series resistances (ESRs) for a lossy LC resonator (series or parallel).</p>
 <b>Component values and resonant frequency:</b><br>
 </br>
 
@@ -272,7 +321,8 @@ This calculator performs circuit analysis by finding the ABCD-parameters of the 
 <script type="text/javascript" src="setImageScript.js"></script> <!-- Contains custom js function for generating the png image of the system-->
 <script type="text/javascript" src="hashScript.js"></script> <!-- Contains custom js functions for working with the URL hash string-->
 <script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
-
+<script type="text/javascript" src="UIScript.js"></script> <!-- Controls user interface things like the sticky button that asks to close sidebar or not, etc.-->
+<script type="text/javascript" src="CSVScript.js"></script> <!-- Implements the download output as CSV button function .-->
 </body>
 </html>
 

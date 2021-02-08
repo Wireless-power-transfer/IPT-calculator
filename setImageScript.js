@@ -1,15 +1,13 @@
 /* Author: Aaron Scher
  */ //This  function is called at the very end of the main buttonFunction(). The purpose of this function is to generate the correct figure to display based on the user's source, inverter, rectifier, and load options.
 
-function setImage(sourceType, invConst, rectConst, loadType) {
-  //Display correct source image (also display coupler image)
+function setImage(sourceType, invConst, rectConst, loadType, compensation) {
+  //Display correct source image
   if (sourceType == 1) {
     document.getElementById("sourceImage").src = "images/sourceVg.png";
-    document.getElementById("couplerImage").src = "images/coupler.png";
   }
   if (sourceType == 2) {
     document.getElementById("sourceImage").src = "images/sourceIg.png";
-    document.getElementById("couplerImage").src = "images/coupler.png";
   }
   //Display correct inverter image
   if (invConst == 1) {
@@ -20,14 +18,55 @@ function setImage(sourceType, invConst, rectConst, loadType) {
     document.getElementById("inverterImage").src =
       "images/inverterFullBridge.png";
   }
-  //Display correct rectifier image
-  if (rectConst == 1) {
-    document.getElementById("rectifierImage").src =
-      "images/rectifierHalfBridge.png";
+
+  //Display correct compensation network
+  if (compensation == 1) {
+    document.getElementById("couplerImage").src = "images/seriesSeries.png";
   }
-  if (rectConst == 2) {
+  if (compensation == 2) {
+    document.getElementById("couplerImage").src = "images/seriesParallel.png";
+  }
+  if (compensation == 3) {
+    document.getElementById("couplerImage").src = "images/lccSeries.png";
+  }
+
+  if (compensation == 4) {
+    document.getElementById("couplerImage").src = "images/lccLCC.png";
+  }
+
+  //Display correct rectifier image
+  if (rectConst == 1 && compensation == 1) {
     document.getElementById("rectifierImage").src =
-      "images/rectifierFullBridge.png";
+      "images/rectifierHalfBridgeCurrentDriven.png";
+  }
+  if (rectConst == 1 && compensation == 2) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierHalfBridgeVoltageDriven.png";
+  }
+  if (rectConst == 1 && compensation == 3) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierHalfBridgeCurrentDriven.png";
+  }
+  if (rectConst == 1 && compensation == 4) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierHalfBridgeCurrentDriven.png";
+  }
+
+  if (rectConst == 2 && compensation == 1) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierFullBridgeCurrentDriven.png";
+  }
+  if (rectConst == 2 && compensation == 2) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierFullBridgeVoltageDriven.png";
+  }
+  if (rectConst == 2 && compensation == 3) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierFullBridgeCurrentDriven.png";
+  }
+  if (rectConst == 2 && compensation == 4) {
+    document.getElementById("rectifierImage").src =
+      "images/rectifierFullBridgeCurrentDriven.png";
   }
 
   //Display correct load

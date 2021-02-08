@@ -258,3 +258,31 @@ font-family:'Times New Roman', Times, serif
   background-color:#999999;
 }
 
+#lccSeriesButtonDisplayArea{
+  color: blue;
+  display: none; 
+}
+
+#lccLCCButtonDisplayArea{
+  color: red;
+  display:none; 
+}
+
+
+.imageRow{
+  display: flex; 
+   overflow: auto;
+}
+
+.imageColumn{
+padding: 0;
+ align-self: flex-end;
+}
+
+.image{
+  height:200px;
+}
+
+/* #inputOutputPowerPlot{
+  display: none; 
+} */

@@ -6,6 +6,12 @@ window.addEventListener("hashchange", function () {
 
 //When the reset button is pressed, set the default hash string and implement the main buttonFunction()
 function resetAll() {
+  document.getElementById("compensation").value = 1;
+  //Trigger the event manually (so that the window gets cleared... since we have an event listener in another module that listens for a change to the compensation dropdown.)
+  const e = new Event("change");
+  const element = document.querySelector("#compensation");
+  element.dispatchEvent(e);
+
   setDefaultHash();
   buttonFunction();
 }
@@ -49,6 +55,15 @@ var hashNames = [
   "RC2",
   "C1",
   "C2",
+  "compensation",
+  "Lf1",
+  "RLf1",
+  "Cf1",
+  "RCf1",
+  "Lf2",
+  "RLf2",
+  "Cf2",
+  "RCf2",
 ];
 
 //These are the default values of the id names saved in the variable hashNames
@@ -73,6 +88,15 @@ var hashDefaultValues = [
   "1e-3",
   "9.5e-8",
   "9.5e-8",
+  "1",
+  "5E-6",
+  "10E-3",
+  "9.5E-8",
+  "10E-3",
+  "5E-6",
+  "10E-3",
+  "9.5E-8",
+  "10E-3",
 ];
 
 //Set the default hash string

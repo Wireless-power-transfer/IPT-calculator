@@ -1,144 +1,7 @@
 //Author: Aaron Scher
 //This function is called from index.html as soon as the page is done loading. The purpose of this function is to initialize the URL hash tag routine (i.e., anchor part of the URL) and call the button function to generate the plots.
 function initFunction() {
-  //initValuesFromHash()
   buttonFunction();
-}
-
-var open = 0; //1 means the sidebar is open
-
-function openNav() {
-  if (open == 1) {
-    document.getElementById("mySideBar").style.width = "320px";
-    document.getElementById("main").style.marginLeft = "340px";
-    document.getElementById("openbtn").innerHTML = "&#9776; Close Sidebar";
-    open = 0;
-    return;
-  }
-
-  if (open == 0) {
-    document.getElementById("mySideBar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-    document.getElementById("openbtn").innerHTML = "&#9776; Open Sidebar";
-    open = 1;
-    return;
-  }
-}
-
-//This function is called immediately after the user changes the source type (choice between constant voltage and constant current). The purpose of this function is to change the text label to reflect the user's selection.
-function sourceSelectFunction() {
-  updateHash();
-  let sourceType = Number(document.getElementById("source").value);
-  if (sourceType == 1) {
-    document.getElementById("sourceTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Input DC voltage, <span style='font-family:Times New Roman'><i> V<sub>g</sub> </i></span> (V): ";
-  }
-  if (sourceType == 2) {
-    document.getElementById("sourceTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Input DC current, <span style='font-family:Times New Roman'><i> I<sub>g</sub> </i></span> (A): ";
-  }
-  return sourceType;
-}
-
-//This funciton is called immediately after the user changes the load type (choice between RL, VL, IL, and PL). The purpose of this function is to change the text label to reflect the user's selection.
-function loadSelectFunction() {
-  updateHash();
-  let loadType = Number(document.getElementById("load").value);
-  if (loadType == 1) {
-    //RL
-    document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (Ohm): ";
-  }
-  if (loadType == 2) {
-    //VL
-    document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load voltage, <span style='font-family:Times New Roman'><i> V<sub>L</sub> </i></span> (V): ";
-  }
-  if (loadType == 3) {
-    //IL
-    document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load current, <span style='font-family:Times New Roman'><i> I<sub>L</sub> </i></span> (A): ";
-  }
-  if (loadType == 4) {
-    //PLV
-    document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load power, <span style='font-family:Times New Roman'><i> P<sub>L</sub> </i></span> (W): ";
-  }
-  if (loadType == 5) {
-    //PLI
-    document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load power, <span style='font-family:Times New Roman'><i> P<sub>L</sub> </i></span> (W): ";
-  }
-  return loadType;
-}
-
-//This function is called when the download output as CSV button is pressed.
-function downloadCSV(
-  freq,
-  efficiency,
-  P1,
-  P2,
-  magV1,
-  magI1,
-  magV2,
-  magI2,
-  angZin,
-  magZin,
-  VL,
-  IL,
-  Vg,
-  Ig,
-  RL,
-  magVC1,
-  magVC2,
-  Pl1,
-  Pl2
-) {
-  let csvTextRow = [];
-  csvTextRow[0] = "Input parameters: " + getHashValue() + "\n";
-  csvTextRow[1] = "efficiency," + efficiency.join(",") + "\n";
-  csvTextRow[2] = "P1," + P1.join(",") + "\n";
-  csvTextRow[3] = "P2," + P2.join(",") + "\n";
-  csvTextRow[4] = "magV1," + magV1.join(",") + "\n";
-  csvTextRow[5] = "magI1," + magI1.join(",") + "\n";
-  csvTextRow[6] = "magV2," + magV2.join(",") + "\n";
-  csvTextRow[7] = "magI2," + magI2.join(",") + "\n";
-  csvTextRow[8] = "angZin," + angZin.join(",") + "\n";
-  csvTextRow[9] = "magZin," + magZin.join(",") + "\n";
-  csvTextRow[10] = "VL," + VL.join(",") + "\n";
-  csvTextRow[11] = "IL," + IL.join(",") + "\n";
-  csvTextRow[12] = "Vg," + Vg.join(",") + "\n";
-  csvTextRow[13] = "Ig," + Ig.join(",") + "\n";
-  csvTextRow[14] = "RL," + RL.join(",") + "\n";
-  csvTextRow[15] = "magVC1," + magVC1.join(",") + "\n";
-  csvTextRow[16] = "magVC2," + magVC2.join(",") + "\n";
-  csvTextRow[17] = "Pl1," + Pl1.join(",") + "\n";
-  csvTextRow[18] = "Pl2," + Pl2.join(",");
-
-  let text = [];
-
-  for (let i = 0; i < csvTextRow.length; i++) {
-    text += csvTextRow[i];
-  }
-
-  download("OutputSSIPT.csv", text);
-}
-
-//This function is used by the downloadCSV() function (see above)
-function download(filename, text) {
-  var element = document.createElement("a");
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-  );
-  element.setAttribute("download", filename);
-
-  element.style.display = "none";
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
 }
 
 //This is the main function that analyzes the circuit. it's called "buttonFunction" because originally, there was a big button that the user pressed to analyze. Then I went with the hash system which automatically calls this function when a change is implement (and so I got rid of the button.)
@@ -152,21 +15,15 @@ function buttonFunction(genCSV) {
 
   let loadType = loadSelectFunction(); //Indicates load type. Will return RL,VL, IL, or PL
 
-  //Get values out of text boxes and convert to numbers:
-  //let Vg = Number(document.getElementById("Vg_Ig").value);
-  //let RL = Number(document.getElementById("RL_VL_IL_PL").value);
-
   let sourceValue_Vg_Ig = Number(document.getElementById("Vg_Ig").value); //new
   let loadValue_RL_VL_IL_PL = Number(
     document.getElementById("RL_VL_IL_PL").value
   ); //new
+  let compensation = Number(document.getElementById("compensation").value); //get compensation type. 1 = SS, 2 = SP, 3 = LCC-S, 5 = LCC-LCC
+
   let k = Number(document.getElementById("k").value); //coupling coefficient
   let L1 = Number(document.getElementById("L1").value); //primary inductance
   let L2 = Number(document.getElementById("L2").value); //secondary inductance
-  /*   let Q1 = Number(document.getElementById("Q1").value); //quality factor Q1 (primary)
-  let Q2 = Number(document.getElementById("Q2").value); //quality factor Q2 (secondary) */
-  /*   let f01 = Number(document.getElementById("f01").value); //primary resonant frequency
-  let f02 = Number(document.getElementById("f02").value); //secondary resonant frequency */
   let fmin = Number(document.getElementById("fmin").value); //minimum frequency to plot
   let fmax = Number(document.getElementById("fmax").value); //maximun frequency to plot
   let fnum = Number(document.getElementById("fnum").value); //number of frequency points in plot
@@ -180,10 +37,18 @@ function buttonFunction(genCSV) {
   let C2 = Number(document.getElementById("C2").value); //C2
   let RC1 = Number(document.getElementById("RC1").value); //ESR of L1
   let RC2 = Number(document.getElementById("RC2").value); //ESR of L2
+  let Lf1 = Number(document.getElementById("Lf1").value); //LCC primary Lf1 inductance
+  let Lf2 = Number(document.getElementById("Lf2").value); //LCC secondary Lf2 inductance
+  let RLf1 = Number(document.getElementById("RLf1").value); //ESR of LCC primary Lfl1
+  let RLf2 = Number(document.getElementById("RLf2").value); //ESR of LCC secondary Lf2
+  let Cf1 = Number(document.getElementById("Cf1").value); //LCC primary Cf1 capactiance
+  let Cf2 = Number(document.getElementById("Cf2").value); //LCC seconary Cf2 capactiance
+  let RCf1 = Number(document.getElementById("RCf1").value); //ESR of LCC primary Cf1
+  let RCf2 = Number(document.getElementById("RCf2").value); //ESR of LCC primary Cf2
 
   //Calculate and define other parameters and variables:
   let f01 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequenc of primary
-  let f02 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequency of secondary
+  let f02 = 1 / math.sqrt(L2 * C2) / 2 / math.pi; //resonant frequency of secondary
   let QL1 = (2 * math.pi * f01 * L1) / RL1; //Unloaded Q of L1
   let QL2 = (2 * math.pi * f02 * L2) / RL2; //Unloaded Q of L2
   let QC1 = 1 / (2 * math.pi * f01 * C1) / RC1; //Unloaded Q of C1
@@ -206,14 +71,8 @@ function buttonFunction(genCSV) {
   let Q1 = (QL1 * QC1) / (QL1 + QC1); //Q of primary
   let Q2 = (QL2 * QC2) / (QL2 + QC2); //Q of secondary
 
-  //calculate AC equivalent value of MOSFET Ron"
+  //calculate AC equivalent value of MOSFET Ron
   let RonACeq = Ron * invConst;
-
-  /*   let R1 = (2 * math.pi * f01 * L1) / Q1 + Ron * invConst; //compute R1 (ESR of primary)
-  let R2 = (2 * math.pi * f02 * L2) / Q2; //compute R2 (ESR of secndary) */
-  /*   let C1 = 1 / (2 * math.pi * f01) ** 2 / L1; //compute C1 (primary)
-  let C2 = 1 / (2 * math.pi * f02) ** 2 / L2; //compute C2 (secondary) */
-
   let delta_f = (fmax - fmin) / (fnum - 1); //frequency step size
   let freq = []; //define frequency variable as an array
   let M = k * math.sqrt(L1 * L2); //calculate mutual inductance
@@ -222,6 +81,7 @@ function buttonFunction(genCSV) {
   let B = []; //initialize B of system's ABCD matrix
   let C = []; //initialize C of system's ABCD matrix
   let D = []; //initialize D of system's ABCD matrix
+  let V1 = [];
   let I2 = []; //initialize secondary current
   let V2 = []; //initialize secondary voltage
   let I1 = []; //initialize primary current
@@ -229,13 +89,9 @@ function buttonFunction(genCSV) {
   let P2 = []; //initialize output power
   let efficiency = []; //initialize power transfer efficiency
   let K = []; //initialize K value
-  let Pl1 = []; //power loss in primary resonator
-  let Pl2 = []; //power loss in secondary resonator
   let magI2 = []; //magntidue of I2
   let magI1 = []; //magntidue of I1
   let magV1 = []; //magntidue of V1
-  let magVC1 = []; //magntidue of voltage across primary capacitor
-  let magVC2 = []; //magntidue of voltage across secondary capacitor
   let magV2 = []; //magntiude of output voltage (AC)
   let Zin = []; //Input impedance
   let angZin = []; //Angle of input impedance
@@ -246,42 +102,190 @@ function buttonFunction(genCSV) {
   let Ig = [];
   let RL = [];
   let PL = []; //power delivered to DC load
-  let = specialOutputMessage = []; //special output message that appears after the calculate and plot button is pressed
 
-  //TEMPORARY
-  let R1 = RL1 + RC1;
-  let R2 = RL2 + RC2;
+  let ZLf1 = [];
+  let VCf1 = [];
+  let ZCf1 = [];
+  let ICf1 = [];
+  let IL1 = [];
+  let ZLf2 = [];
+  let VCf2 = [];
+  let ZCf2 = [];
+  let ICf2 = [];
+  let IL2 = [];
+  let ZC2 = [];
+  let IC2 = [];
+
+  //Initialize the following arrays to [0]. These are the results of calculations and depend on the specific compensation scheme that the user choses.
+  let PlossRectifier = [0]; //power loss in rectifier
+  let PlossInverter = [0]; //power loss in inverter
+  let PlossC1 = [0]; //power loss in primary capacitor
+  let PlossC2 = [0]; //power loss in secondary capacitor
+  let PlossL1 = [0]; //power loss in primary inductor
+  let PlossL2 = [0]; //power loss in secondary inductor
+  let magIC1 = [0]; //current in primary capacitor
+  let magIC2 = [0]; //current in secondary capacitor
+  let magIL1 = [0]; //current in primary inductor
+  let magIL2 = [0]; //current in secondary inductor
+  let magVC1 = [0]; //voltage across primary capacitor
+  let magVC2 = [0]; //voltage across secondary capacitor
+  let PlossCf1 = [0]; //power loss in primary-side LCC capacitor Cf1
+  let PlossCf2 = [0]; //power loss in secondary-side LCC capacitor Cf2
+  let PlossLf1 = [0]; //power loss in primary-side LCC inductor Lf1
+  let PlossLf2 = [0]; //power loss in secondary-side LCC inductor Lf2
+  let magICf1 = [0]; //current in primary-side LCC capacitor Cf1
+  let magICf2 = [0]; //current in secondary-side LCC capacitor Cf2
+  let magILf1 = [0]; //current in primary-siide inductor Lf1
+  let magILf2 = [0]; //current in secondary-side inductor Lf2
+  let magVCf1 = [0]; //voltage across primary-side capacitor Cf1
+  let magVCf2 = [0]; //voltage across secondary-siude capacitor Cf2
+
+  let specialOutputMessage = []; //special output message that appears after the calculate and plot button is pressed
+  var rectDrivenType = []; //This variable denotes if we are working with a current driven rectifier ( =1) or a voltage driven rectifier (=2) rectifier.
+  //Create ABCD matrix objects for the user-selected compensation type
+  switch (compensation) {
+    case 1: //series-series compensation
+      rectDrivenType = 1; //current driven rectifier
+      var R1 = RL1 + RC1;
+      var R2 = RL2 + RC2;
+      var seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
+      var Kinverter = new KinverterElement([]); //create K inverter object
+      var seriesSecondary = new SeriesLCR(L2, C2, R2, []); //create series secondary object
+      break;
+    case 2: //series-parallel compensation
+      rectDrivenType = 2; //voltage driven rectifier
+      var R1 = RL1 + RC1;
+      var seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
+      var Kinverter = new KinverterElement([]); //create K inverter object
+      var LSecondary = new SeriesL(L2, RL2, []); //create series secondary object
+      var CSecondary = new ParallelC(C2, RC2, []); //create series secondary object
+      break;
+    case 3: //LCC-series compensation
+      rectDrivenType = 1; //current driven rectifier
+      var R1 = RL1 + RC1;
+      var R2 = RL2 + RC2;
+      var LprimaryLCC = new SeriesL(Lf1, RLf1, []); //create series secondary object
+      var CprimaryLCC = new ParallelC(Cf1, RCf1, []); //create parallel secondary object
+      var seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
+      var Kinverter = new KinverterElement([]); //create K inverter object
+      var seriesSecondary = new SeriesLCR(L2, C2, R2, []); //create series secondary object
+      break;
+    case 4: //LCC-LCC compensation
+      rectDrivenType = 1; //current driven rectifier
+      var R1 = RL1 + RC1;
+      var R2 = RL2 + RC2;
+      var LprimaryLCC = new SeriesL(Lf1, RLf1, []); //create series secondary object
+      var CprimaryLCC = new ParallelC(Cf1, RCf1, []); //create parallel secondary object
+      var seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
+      var Kinverter = new KinverterElement([]); //create K inverter object
+      var seriesSecondary = new SeriesLCR(L2, C2, R2, []); //create series secondary object
+      var CsecondaryLCC = new ParallelC(Cf2, RCf2, []); //create parallel secondary object
+      var LsecondaryLCC = new SeriesL(Lf2, RLf2, []); //create series secondary object
+      break;
+  }
 
   let seriesRon = new SeriesR(RonACeq, []); //create Ron object
-  let seriesPrimary = new SeriesLCR(L1, C1, R1, []); //create series primary object
-  let seriesSecondary = new SeriesLCR(L2, C2, R2, []); //create series secondary object
+  seriesRon.createABCD(); //create ABCD matrix that models series MOSFET on resistance primary object
+
   let SSIPT_System = new TotalIPTSystem(); //create total IPT system object
-  let Kinverter = new KinverterElement([]); //create K inverter object
+  SSIPT_System.SetRectTf(rectDrivenType, rectConst); //Set the rectifier transfer function for the calculations
 
   let mNum = 3; //Number of times to iterate over diode
   // Analyze circuit at each frequency using ABCD matrices
+
   for (let i = 0; i < fnum; i++) {
     let etaDiode = 1; //Start diode iteration with diode rectifier efficiency = 1.
     SSIPT_System.etaDiode = etaDiode;
     for (let m = 0; m < mNum; m++) {
       freq[i] = fmin + delta_f * i; //evaluate frequency at index i
 
-      seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
-      seriesRon.createABCD(); //create ABCD matrix that models series primary object
-      seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
-      seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
-      seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
-      seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
-      K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
-      Kinverter.K = K; //set value of K
-      Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
+      //Calculate for the user-specified compensation type.
+      switch (compensation) {
+        case 1: //series-series compensation
+          seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+          seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
+          seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
+          seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
+          K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
+          Kinverter.K = K; //set value of K
+          Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
 
-      systemABCDmatrix = math.multiply(
-        seriesRon.ABCD,
-        seriesPrimary.ABCD,
-        Kinverter.ABCD,
-        seriesSecondary.ABCD
-      ); //Compute system ABCD matrix:
+          systemABCDmatrix = math.multiply(
+            seriesRon.ABCD,
+            seriesPrimary.ABCD,
+            Kinverter.ABCD,
+            seriesSecondary.ABCD
+          ); //Compute system ABCD matrix:
+          break;
+        case 2: //series-parallel compensation
+          seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+          LSecondary.f = freq[i]; //assign current frequency to the series secondary object
+          CSecondary.f = freq[i]; //assign current frequency to the series secondary object
+
+          seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
+          LSecondary.createABCD();
+          CSecondary.createABCD();
+          K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
+          Kinverter.K = K; //set value of K
+          Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
+
+          systemABCDmatrix = math.multiply(
+            seriesRon.ABCD,
+            seriesPrimary.ABCD,
+            Kinverter.ABCD,
+            LSecondary.ABCD,
+            CSecondary.ABCD
+          ); //Compute system ABCD matrix:
+          break;
+        case 3: //LCC-series compensation
+          LprimaryLCC.f = freq[i]; //assign current frequency to the series primary object
+          CprimaryLCC.f = freq[i]; //assign current frequency to the series secondary object
+          LprimaryLCC.createABCD(); //create ABCD matrix that models series primary object
+          CprimaryLCC.createABCD(); //create ABCD matrix that models series secondary
+          seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+          seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
+          seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
+          seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
+          K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
+          Kinverter.K = K; //set value of K
+          Kinverter.createABCD(); //creare ABCD matrix that models K inverter
+          systemABCDmatrix = math.multiply(
+            seriesRon.ABCD,
+            LprimaryLCC.ABCD,
+            CprimaryLCC.ABCD,
+            seriesPrimary.ABCD,
+            Kinverter.ABCD,
+            seriesSecondary.ABCD
+          );
+          break;
+        case 4: //LCC-LCC compensation
+          LprimaryLCC.f = freq[i]; //assign current frequency to the series primary object
+          CprimaryLCC.f = freq[i]; //assign current frequency to the series secondary object
+          LsecondaryLCC.f = freq[i]; //assign current frequency to the series primary object
+          CsecondaryLCC.f = freq[i]; //assign current frequency to the series secondary object
+          LprimaryLCC.createABCD(); //create ABCD matrix that models series primary object
+          CprimaryLCC.createABCD(); //create ABCD matrix that models series secondary
+          LsecondaryLCC.createABCD(); //create ABCD matrix that models series primary object
+          CsecondaryLCC.createABCD(); //create ABCD matrix that models series secondary
+          seriesPrimary.f = freq[i]; //assign current frequency to the series primary object
+          seriesSecondary.f = freq[i]; //assign current frequency to the series secondary object
+          seriesPrimary.createABCD(); //create ABCD matrix that models series primary object
+          seriesSecondary.createABCD(); //create ABCD matrix that models series secondary object
+          K = 2 * math.pi * freq[i] * M; //equivalent value of K for K inverter
+          Kinverter.K = K; //set value of K
+          Kinverter.createABCD(); //crearte ABCD matrix that models K inverter
+          systemABCDmatrix = math.multiply(
+            seriesRon.ABCD,
+            LprimaryLCC.ABCD,
+            CprimaryLCC.ABCD,
+            seriesPrimary.ABCD,
+            Kinverter.ABCD,
+            seriesSecondary.ABCD,
+            CsecondaryLCC.ABCD,
+            LsecondaryLCC.ABCD
+          );
+          break;
+      }
 
       SSIPT_System.A = systemABCDmatrix.subset(math.index(0, 0)); //extract individual A of system's ABCD matrix and assign
       SSIPT_System.B = systemABCDmatrix.subset(math.index(0, 1)); //extract individual B of system's ABCD matrix and assign
@@ -292,7 +296,6 @@ function buttonFunction(genCSV) {
         loadType,
         sourceValue_Vg_Ig,
         loadValue_RL_VL_IL_PL,
-        rectConst,
         invConst
       ); //find I1, I2, V1, and V2
 
@@ -309,20 +312,135 @@ function buttonFunction(genCSV) {
       VL[i] = SSIPT_System.VL;
       IL[i] = SSIPT_System.IL;
       efficiency[i] = SSIPT_System.efficiency;
-      Vg[i] = SSIPT_System.Vg; //ADD ON
-      Ig[i] = SSIPT_System.Ig; //ADD ON
-      RL[i] = SSIPT_System.RL; //ADD ON
-      PL[i] = SSIPT_System.PL; //ADD ON
+      Vg[i] = SSIPT_System.Vg;
+      Ig[i] = SSIPT_System.Ig;
+      RL[i] = SSIPT_System.RL;
+      PL[i] = SSIPT_System.PL;
 
-      //Calculate arrays using equations specific to the SSIPT system:
-      magVC1[i] = magI1[i] / freq[i] / math.pi / 2 / C1; //magntiude of voltage across primary capacitor
-      magVC2[i] = magI2[i] / freq[i] / math.pi / 2 / C2; //magntiude of voltage across secondary capacitor
-      Pl1[i] = (magI1[i] * magI1[i] * R1) / 2;
-      Pl2[i] = (magI2[i] * magI2[i] * R2) / 2;
+      PlossRectifier[i] = P2[i] - PL[i]; //power loss in rectifier
+      PlossInverter[i] = (magI1[i] ** 2 / 2) * RonACeq; //power loss in inverter
+
+      //Extra calculations (set each value to zero as a default). We will calculate relevant variables next.
+
+      switch (compensation) {
+        case 1: //series-series compensation
+          //Calculate arrays using equations specific to the SSIPT system:
+          magVC1[i] = magI1[i] / freq[i] / math.pi / 2 / C1;
+          magVC2[i] = magI2[i] / freq[i] / math.pi / 2 / C2;
+          magIC1[i] = magI1[i];
+          magIC2[i] = magI2[i];
+          magIL1[i] = magI1[i];
+          magIL2[i] = magI2[i];
+          PlossC1[i] = (magI1[i] * magI1[i] * RC1) / 2;
+          PlossC2[i] = (magI2[i] * magI2[i] * RC2) / 2;
+          PlossL1[i] = (magI1[i] * magI1[i] * RL1) / 2;
+          PlossL2[i] = (magI2[i] * magI2[i] * RL2) / 2;
+          break;
+        case 2: //series-parallel compensation
+          //Calculate arrays using equations specific to the SSIPT system:
+
+          V2[i] = SSIPT_System.V2; //we need
+          I2[i] = SSIPT_System.I2;
+          magIL1[i] = magI1[i];
+          magIL2[i] = magI2[i];
+          magVC1[i] = magI1[i] / freq[i] / math.pi / 2 / C1; //magntiude of voltage across primary capacitor
+          magVC2[i] = magV2[i]; //magntiude of voltage across secondary capacitor
+          magIC1[i] = magI1[i];
+          ZC2 = math.complex(RC2, -1 / 2 / math.pi / freq[i] / C2); //Impedance R2-j/(jwC2)
+          IC2 = math.divide(V2[i], ZC2);
+          magIC2[i] = math.abs(IC2);
+          magIL1[i] = magI1[i];
+          IL2 = math.add(I2[i], IC2);
+          magIL2[i] = math.abs(IL2);
+          PlossC1[i] = (magIL1[i] * magIL1[i] * RC1) / 2;
+          PlossC2[i] = (magIC2[i] * magIC2[i] * RC2) / 2;
+          PlossL1[i] = (magIL1[i] * magIL1[i] * RL1) / 2;
+          PlossL2[i] = (magIL2[i] * magIL2[i] * RL2) / 2;
+          break;
+        case 3: //LCC-series compensation
+          V1[i] = SSIPT_System.V1; //we need
+          I1[i] = SSIPT_System.I1;
+
+          ZLf1 = math.add(RLf1, 2 * math.pi * freq[i] * Lf1); // impedance of Lf1
+          VCf1 = math.subtract(V1[i], math.multiply(I1[i], ZLf1)); //Voltage across Cf1
+          ZCf1 = math.complex(RCf1, -1 / 2 / math.pi / freq[i] / Cf1); //impedance of Cf1
+          ICf1 = math.divide(VCf1, ZCf1); //current through Cf1
+          IL1 = math.subtract(I1[i], ICf1);
+
+          magILf1[i] = math.abs(I1[i]);
+          magICf1[i] = math.abs(ICf1);
+          magIC1[i] = math.abs(IL1);
+          magIL1[i] = math.abs(IL1);
+          magIC2[i] = magI2[i];
+          magIL2[i] = magI2[i];
+
+          magVC1[i] = magIC1[i] / freq[i] / math.pi / 2 / C1; //magntiude of voltage across primary capacitor
+          magVC2[i] = magIC2[i] / freq[i] / math.pi / 2 / C2; //magntiude of voltage across secondary capacitor
+          magVCf1[i] = magICf1[i] / freq[i] / math.pi / 2 / Cf1; //magntiude of voltage across secondary capacitor
+
+          PlossC1[i] = (magIC1[i] * magIC1[i] * RC1) / 2;
+          PlossC2[i] = (magIC2[i] * magIC2[i] * RC2) / 2;
+          PlossCf1[i] = (magICf1[i] * magICf1[i] * RCf1) / 2;
+          PlossL1[i] = (magIL1[i] * magIL1[i] * RL1) / 2;
+          PlossL2[i] = (magIL2[i] * magIL2[i] * RL2) / 2;
+          PlossLf1[i] = (magILf1[i] * magILf1[i] * RL2) / 2;
+
+          break;
+        case 4: //LCC-LCC compensation
+          V1[i] = SSIPT_System.V1; //we need
+          V2[i] = SSIPT_System.V2;
+          I1[i] = SSIPT_System.I1;
+          I2[i] = SSIPT_System.I2;
+
+          ZLf1 = math.add(RLf1, 2 * math.pi * freq[i] * Lf1); // impedance of Lf1
+          VCf1 = math.subtract(V1[i], math.multiply(I1[i], ZLf1)); //Voltage across Cf1
+          ZCf1 = math.complex(RCf1, -1 / 2 / math.pi / freq[i] / Cf1); //impedance of Cf1
+          ICf1 = math.divide(VCf1, ZCf1); //current through Cf1
+          IL1 = math.subtract(I1[i], ICf1);
+
+          magILf1[i] = math.abs(I1[i]);
+          magICf1[i] = math.abs(ICf1);
+          magIC1[i] = math.abs(IL1);
+          magIL1[i] = math.abs(IL1);
+
+          ZLf2 = math.add(RLf2, 2 * math.pi * freq[i] * Lf2); // impedance of Lf1
+          VCf2 = math.add(V2[i], math.multiply(I2[i], ZLf2)); //Voltage across Cf1
+          ZCf2 = math.complex(RCf2, -1 / 2 / math.pi / freq[i] / Cf2); //impedance of Cf1
+          ICf2 = math.divide(VCf2, ZCf2); //current through Cf1
+          IL2 = math.add(I2[i], ICf2);
+
+          magILf2[i] = math.abs(I2[i]);
+          magICf2[i] = math.abs(ICf2);
+          magIC2[i] = math.abs(IL2);
+          magIL2[i] = math.abs(IL2);
+
+          magVC1[i] = magIC1[i] / freq[i] / math.pi / 2 / C1;
+          magVC2[i] = magIC2[i] / freq[i] / math.pi / 2 / C2;
+          magVCf1[i] = magICf1[i] / freq[i] / math.pi / 2 / Cf1;
+          magVCf2[i] = magICf2[i] / freq[i] / math.pi / 2 / Cf2;
+
+          PlossC1[i] = (magIC1[i] * magIC1[i] * RC1) / 2;
+          PlossC2[i] = (magIC2[i] * magIC2[i] * RC2) / 2;
+          PlossCf1[i] = (magICf1[i] * magICf1[i] * RCf1) / 2;
+          PlossCf2[i] = (magICf2[i] * magICf2[i] * RCf2) / 2;
+          PlossL1[i] = (magIL1[i] * magIL1[i] * RL1) / 2;
+          PlossL2[i] = (magIL2[i] * magIL2[i] * RL2) / 2;
+          PlossLf1[i] = (magILf1[i] * magILf1[i] * RLf1) / 2;
+          PlossLf2[i] = (magILf2[i] * magILf2[i] * RLf2) / 2;
+          break;
+      }
 
       //Handle the diode
+      switch (rectDrivenType) {
+        case 1: //current driven rectifier
+          etaDiode = 1 / (1 + (2 * Vfwd) / VL[i]);
+          break;
 
-      etaDiode = 1 / (1 + (2 * Vfwd) / VL[i]);
+        case 2: //voltage driven rectifier
+          etaDiode = 1 / (1 + (rectConst * Vfwd) / VL[i]);
+          break;
+      }
+
       if (VL[i] == 0) {
         etaDiode = 0;
       }
@@ -334,6 +452,7 @@ function buttonFunction(genCSV) {
     downloadCSV(
       freq,
       efficiency,
+      PL,
       P1,
       P2,
       magV1,
@@ -347,10 +466,28 @@ function buttonFunction(genCSV) {
       Vg,
       Ig,
       RL,
+      PlossRectifier,
+      PlossInverter,
+      PlossC1,
+      PlossC2,
+      PlossL1,
+      PlossL2,
+      magIC1,
+      magIC2,
+      magIL1,
+      magIL2,
       magVC1,
       magVC2,
-      Pl1,
-      Pl2
+      PlossCf1,
+      PlossCf2,
+      PlossLf1,
+      PlossLf2,
+      magICf1,
+      magICf2,
+      magILf1,
+      magILf2,
+      magVCf1,
+      magVCf2
     );
   }
 
@@ -371,14 +508,16 @@ function buttonFunction(genCSV) {
     " H. " +
     specialOutputMessage;
 
-  setImage(sourceType, invConst, rectConst, loadType);
+  setImage(sourceType, invConst, rectConst, loadType, compensation);
 
   let precision = 3;
-  plotGenFunction(
+  generateAllPlots(
+    compensation,
     freq,
     efficiency,
-    P1,
     PL,
+    P1,
+    P2,
     magV1,
     magI1,
     magV2,
@@ -390,10 +529,28 @@ function buttonFunction(genCSV) {
     Vg,
     Ig,
     RL,
+    PlossRectifier,
+    PlossInverter,
+    PlossC1,
+    PlossC2,
+    PlossL1,
+    PlossL2,
+    magIC1,
+    magIC2,
+    magIL1,
+    magIL2,
     magVC1,
     magVC2,
-    Pl1,
-    Pl2
+    PlossCf1,
+    PlossCf2,
+    PlossLf1,
+    PlossLf2,
+    magICf1,
+    magICf2,
+    magILf1,
+    magILf2,
+    magVCf1,
+    magVCf2
   );
 }
 
@@ -431,6 +588,46 @@ class SeriesLCR {
     let A = 1;
     let B = math.complex(this.R, w * this.L - 1 / this.C / w);
     let C = 0;
+    let D = 1;
+    this.ABCD = math.matrix([
+      [A, B],
+      [C, D],
+    ]);
+  }
+}
+
+class SeriesL {
+  constructor(L, R, f) {
+    this.L = L;
+    this.R = R;
+    this.f = f;
+    this.ABCD = [];
+  }
+  createABCD() {
+    let w = 2 * math.pi * this.f;
+    let A = 1;
+    let B = math.complex(this.R, w * this.L);
+    let C = 0;
+    let D = 1;
+    this.ABCD = math.matrix([
+      [A, B],
+      [C, D],
+    ]);
+  }
+}
+
+class ParallelC {
+  constructor(C, R, f) {
+    this.C = C;
+    this.R = R;
+    this.f = f;
+    this.ABCD = [];
+  }
+  createABCD() {
+    let w = 2 * math.pi * this.f;
+    let A = 1;
+    let B = 0;
+    let C = math.divide(1, math.complex(this.R, -1 / this.C / w)); //Admittance (Y)
     let D = 1;
     this.ABCD = math.matrix([
       [A, B],
@@ -483,13 +680,32 @@ class TotalIPTSystem {
     this.efficiency = [];
     this.etaDiode = [];
     this.PL = [];
+    this.rectI_tf = []; //rectifier current transfer function (depends if voltage or current driven rectifier)... Iin(AC) = IL*rectI_tf
+    this.rectV_tf = []; //rectifier voltage transfer function (depends if voltage or current driven rectifier)... Vin(AC) = VL*rectI_tf
+    this.rectR_tf = []; //rectifier resistance transfer function (depends if voltage or current driven rectifier)... Rin(AC) = RL*rectI_tf
   }
+
+  SetRectTf(rectDrivenType, rectConst) {
+    switch (rectDrivenType) {
+      case 1: //current driven
+        this.rectI_tf = math.pi / rectConst;
+        this.rectV_tf = (2 * rectConst) / math.pi;
+        this.rectR_tf = (2 * rectConst ** 2) / math.pi ** 2;
+        break;
+
+      case 2: //voltage driven
+        this.rectI_tf = (2 * rectConst) / math.pi;
+        this.rectV_tf = math.pi / rectConst;
+        this.rectR_tf = math.pi ** 2 / 2 / rectConst ** 2;
+        break;
+    }
+  }
+
   SolveForI1_I2_V1_V2(
     sourceType,
     loadType,
     sourceValue_Vg_Ig,
     loadValue_RL_VL_IL_PL,
-    rectConst,
     invConst
   ) {
     let errorFlag = 0;
@@ -499,11 +715,7 @@ class TotalIPTSystem {
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
-      this.ReL =
-        (this.RL * 2 * rectConst * rectConst) /
-        math.pi /
-        math.pi /
-        this.etaDiode; //calculate effective AC resistance
+      this.ReL = (this.RL * this.rectR_tf) / this.etaDiode; //calculate effective AC resistance
       this.I2 = math.divide(
         this.V1,
         math.add(math.multiply(this.A, this.ReL), this.B)
@@ -520,11 +732,7 @@ class TotalIPTSystem {
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
-      this.ReL =
-        (this.RL * 2 * rectConst * rectConst) /
-        math.pi /
-        math.pi /
-        this.etaDiode; //calculate effective AC resistance
+      this.ReL = (this.RL * this.rectR_tf) / this.etaDiode; //calculate effective AC resistance
       this.I2 = math.divide(
         this.I1,
         math.add(math.multiply(this.C, this.ReL), this.D)
@@ -540,8 +748,7 @@ class TotalIPTSystem {
       //Source = Vg and Load = VL
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.magV2 =
-        (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi / this.etaDiode; //AC voltage defined by user
+      this.magV2 = (loadValue_RL_VL_IL_PL * this.rectV_tf) / this.etaDiode; //AC voltage defined by user
 
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
       let a_ = math.abs(this.A) ** 2 - (this.V1 / this.magV2) ** 2;
@@ -592,8 +799,8 @@ class TotalIPTSystem {
       //Ig and VL
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
-      this.magV2 =
-        (loadValue_RL_VL_IL_PL * 2 * rectConst) / math.pi / this.etaDiode; //AC load voltage defined by user's choice of VL
+      this.magV2 = (loadValue_RL_VL_IL_PL * rectV_tf) / this.etaDiode; //AC load voltage defined by user's choice of VL
+
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
       let a_ = math.abs(this.C) ** 2 - (this.I1 / this.magV2) ** 2;
       let b_ = math.add(
@@ -644,7 +851,8 @@ class TotalIPTSystem {
 
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
       this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.magI2 = (loadValue_RL_VL_IL_PL * math.pi) / rectConst; ///AC current defined by user's choice of IL
+      this.magI2 = loadValue_RL_VL_IL_PL * this.rectI_tf; ///AC current defined by user's choice of IL
+
       let a_ = math.abs(this.A) ** 2;
       let b_ = math.add(
         math.multiply(this.A, math.conj(this.B)),
@@ -695,14 +903,15 @@ class TotalIPTSystem {
       //Ig and IL
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
-      this.magI2 = (loadValue_RL_VL_IL_PL * math.pi) / rectConst; ///AC current defined by user's choice of IL
+      this.magI2 = loadValue_RL_VL_IL_PL * this.rectI_tf; ///AC current defined by user's choice of IL
+
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
-      let a_ = math.abs(this.C) ** 2 - (this.I1 / this.magI2) ** 2;
+      let a_ = math.abs(this.C) ** 2;
       let b_ = math.add(
         math.multiply(this.C, math.conj(this.D)),
         math.multiply(this.D, math.conj(this.C))
       );
-      let c_ = math.abs(this.D) ** 2;
+      let c_ = math.abs(this.D) ** 2 - (this.I1 / this.magI2) ** 2;
       //First solution to try for ReL:
       this.ReL = math.divide(
         math.subtract(-b_, math.sqrt(b_ ** 2 - 4 * a_ * c_)),
@@ -758,7 +967,8 @@ class TotalIPTSystem {
         let ReL_firstPart = math.abs(Vth) ** 2 / 4 / this.P2 - math.re(Zth);
         let ReL_secondPart = math.sqrt(ReL_firstPart ** 2 - math.abs(Zth) ** 2);
         this.ReL = ReL_firstPart + ReL_secondPart;
-        this.RL = (this.ReL / 2 / rectConst ** 2) * math.pi ** 2; //Load resistance
+        this.RL = this.ReL * this.rectR_tf; //Load resistance
+
         this.I2 = math.divide(Vth, math.add(Zth, this.ReL));
         this.V2 = math.multiply(this.I2, this.ReL); //Solve for V2
         this.I1 = math.add(
@@ -789,7 +999,8 @@ class TotalIPTSystem {
         let ReL_firstPart = math.abs(Vth) ** 2 / 4 / this.P2 - math.re(Zth);
         let ReL_secondPart = math.sqrt(ReL_firstPart ** 2 - math.abs(Zth) ** 2);
         this.ReL = ReL_firstPart - ReL_secondPart;
-        this.RL = (this.ReL / 2 / rectConst ** 2) * math.pi ** 2; //Load resistance
+        this.RL = this.ReL * this.rectR_tf; //Load resistance
+
         this.I2 = math.divide(Vth, math.add(Zth, this.ReL));
         this.V2 = math.multiply(this.I2, this.ReL); //Solve for V2
         this.I1 = math.add(
@@ -820,7 +1031,7 @@ class TotalIPTSystem {
         let ReL_firstPart = math.abs(Vth) ** 2 / 4 / this.P2 - math.re(Zth);
         let ReL_secondPart = math.sqrt(ReL_firstPart ** 2 - math.abs(Zth) ** 2);
         this.ReL = ReL_firstPart + ReL_secondPart;
-        this.RL = (this.ReL / 2 / rectConst ** 2) * math.pi ** 2; //Load resistance
+        this.RL = this.ReL * this.rectR_tf; //Load resistance
         this.I2 = math.divide(Vth, math.add(Zth, this.ReL));
         this.V2 = math.multiply(this.I2, this.ReL); //Solve for V2
         this.V1 = math.add(
@@ -851,7 +1062,7 @@ class TotalIPTSystem {
         let ReL_firstPart = math.abs(Vth) ** 2 / 4 / this.P2 - math.re(Zth);
         let ReL_secondPart = math.sqrt(ReL_firstPart ** 2 - math.abs(Zth) ** 2);
         this.ReL = ReL_firstPart - ReL_secondPart;
-        this.RL = (this.ReL / 2 / rectConst ** 2) * math.pi ** 2; //Load resistance
+        this.RL = this.ReL * this.rectR_tf; //Load resistance
         this.I2 = math.divide(Vth, math.add(Zth, this.ReL));
         this.V2 = math.multiply(this.I2, this.ReL); //Solve for V2
         this.V1 = math.add(
@@ -902,8 +1113,9 @@ class TotalIPTSystem {
       this.angZin = (this.Zin.toPolar().phi * 180) / math.pi; //Angle of input impedance
       this.magZin = math.abs(this.Zin); //Magnitude of input impedance
       this.ReL = this.magV2 / this.magI2;
-      this.VL = (this.magV2 / 2 / rectConst) * math.pi * this.etaDiode;
-      this.IL = (this.magI2 * rectConst) / math.pi;
+      this.VL = (this.magV2 / this.rectV_tf) * this.etaDiode;
+
+      this.IL = this.magI2 / this.rectI_tf;
       this.RL = this.VL / this.IL;
       this.Vg = (this.magV1 * math.pi) / 2 / invConst;
       if (this.Vg != 0) {
