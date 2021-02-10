@@ -128,25 +128,11 @@ function generateAllPlots(
     1.18
   );
 
-  generateSinglePlot(
-    "loadResistancePlot",
-    "DC load resistance",
-    "<i>R<sub>L</sub></i> (&#937;)",
-    "Resistance (&#937;)",
-    "<i>f</i> (Hz)",
-    freq,
-    RL,
-    "h",
-    0.3,
-    "right",
-    1.18
-  );
-
   ////
 
   generateSinglePlot(
     "loadResistancePlot",
-    "Source and load currents (DC)",
+    "DC Load Resistance (DC)",
     "<i>R<sub>L</sub></i> (&#937;)",
     "Resistance (&#937;)",
     "<i>f</i> (Hz)",
