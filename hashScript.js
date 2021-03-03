@@ -2,16 +2,14 @@
 //After any changes occur to the URL hash string, re-analyze and re-plot by implementing the main buttonFunction()
 window.addEventListener("hashchange", function () {
   buttonFunction();
+  updateUI();
+
+  /*  checkBoxValueUpdate(); */
 });
 
 //When the reset button is pressed, set the default hash string and implement the main buttonFunction()
 function resetAll() {
-  document.getElementById("compensation").value = 1;
-  //Trigger the event manually (so that the window gets cleared... since we have an event listener in another module that listens for a change to the compensation dropdown.)
-  const e = new Event("change");
-  const element = document.querySelector("#compensation");
-  element.dispatchEvent(e);
-
+  updateUI();
   setDefaultHash();
   buttonFunction();
 }
@@ -64,6 +62,11 @@ var hashNames = [
   "RLf2",
   "Cf2",
   "RCf2",
+  "f0",
+  "numHarmonics",
+  "numIterations",
+  "enableTimeDomainChoice",
+  "rampUpChoice",
 ];
 
 //These are the default values of the id names saved in the variable hashNames
@@ -97,6 +100,11 @@ var hashDefaultValues = [
   "10E-3",
   "9.5E-8",
   "10E-3",
+  "75E3",
+  "10",
+  "10",
+  "1",
+  "1",
 ];
 
 //Set the default hash string
@@ -165,4 +173,12 @@ function updateHash() {
   }
   hashString = hashString.slice(0, -1); //Remove the last "&" symbol
   window.location.hash = hashString;
+}
+
+function updateUI() {
+  const e = new Event("change");
+  const element = document.querySelector("#compensation");
+  element.dispatchEvent(e);
+  const element2 = document.querySelector("#enableTimeDomainChoice");
+  element2.dispatchEvent(e);
 }

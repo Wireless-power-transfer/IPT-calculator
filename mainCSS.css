@@ -13,6 +13,14 @@ body {
 
 }
 
+#presetDescription { 
+  background-color: yellow;
+  font: caption;
+  
+
+}
+
+
 #main{
     margin-left: 340px; 
     transition: margin-left .5s;
@@ -171,6 +179,25 @@ body {
   height: 320px; 
 }
 
+.plotStyle2 {
+  /* padding: 8px; */
+}
+
+#timeDomainMessage{
+font-family:'Times New Roman', Times, serif
+}
+
+.time-domain-area{
+  padding: 8px;
+    border-style: solid;
+   border-radius: 25px;
+   border: 2px solid black;
+}
+.time-domain-plots{
+  display: flex;
+  justify-content: center;
+  overflow: auto; 
+}
 .buttonStyle1 {
   display: block
   margin-top: 5px;
@@ -202,6 +229,10 @@ body {
 }
 
 #resultsMessage{
+font-family:'Times New Roman', Times, serif
+}
+
+#timeDomainConvergenceToleranceMessage{
 font-family:'Times New Roman', Times, serif
 }
 
@@ -282,6 +313,8 @@ padding: 0;
 .image{
   height:200px;
 }
+
+
 
 /* #inputOutputPowerPlot{
   display: none; 

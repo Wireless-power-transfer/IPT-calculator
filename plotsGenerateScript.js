@@ -1,6 +1,6 @@
 //Author: Aaron Scher
 //This  function is called at the very end of the main buttonFunction(). The purpose of this function is to generate the plots using the Plotly.js library.
-
+//actually, this only generates the frequency domain plots... this was written before the time-domain capabilities were added.
 function generateAllPlots(
   compensation,
   freq,

@@ -20,7 +20,6 @@ function buttonFunction(genCSV) {
     document.getElementById("RL_VL_IL_PL").value
   ); //new
   let compensation = Number(document.getElementById("compensation").value); //get compensation type. 1 = SS, 2 = SP, 3 = LCC-S, 5 = LCC-LCC
-
   let k = Number(document.getElementById("k").value); //coupling coefficient
   let L1 = Number(document.getElementById("L1").value); //primary inductance
   let L2 = Number(document.getElementById("L2").value); //secondary inductance
@@ -45,6 +44,18 @@ function buttonFunction(genCSV) {
   let Cf2 = Number(document.getElementById("Cf2").value); //LCC seconary Cf2 capactiance
   let RCf1 = Number(document.getElementById("RCf1").value); //ESR of LCC primary Cf1
   let RCf2 = Number(document.getElementById("RCf2").value); //ESR of LCC primary Cf2
+  let f0 = Number(document.getElementById("f0").value); //operationg frequency for time domain simulation
+  let numHarmonics = Number(document.getElementById("numHarmonics").value); //number of harmonics for time domain simulation
+  let numIterations = Number(document.getElementById("numIterations").value); //number of iterations for time domain simulation
+  //let samplingFactor = Number(document.getElementById("samplingFactor").value); //number of iterations for time domain simulation
+  //let dampingFactor = Number(document.getElementById("dampingFactor").value); //damping factor for LM algorithm
+  //let relativeTolerance = Number(
+  //  document.getElementById("relativeTolerance").value
+  //); //relative tolerance for LM algorithm
+  let rampUpChoice = Number(document.getElementById("rampUpChoice").value); //relative tolerance for LM algorithm
+  let enableTimeDomainChoice = Number(
+    document.getElementById("enableTimeDomainChoice").value
+  ); //relative tolerance for LM algorithm
 
   //Calculate and define other parameters and variables:
   let f01 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequenc of primary
@@ -190,6 +201,7 @@ function buttonFunction(genCSV) {
   let SSIPT_System = new TotalIPTSystem(); //create total IPT system object
   SSIPT_System.SetRectTf(rectDrivenType, rectConst); //Set the rectifier transfer function for the calculations
 
+  //////FREQUENCY SWEEP BEGIN//////
   let mNum = 3; //Number of times to iterate over diode
   // Analyze circuit at each frequency using ABCD matrices
 
@@ -448,47 +460,150 @@ function buttonFunction(genCSV) {
     }
   }
 
+  //////FREQUENCY SWEEP END//////
+  if (enableTimeDomainChoice == 1) {
+    if (loadType == 1 && sourceType == 1 && compensation != 2) {
+      let timeDomainData = timeSimSourceType1LoadType1(
+        k,
+        M,
+        L1,
+        L2,
+        invConst,
+        rectConst,
+        RonACeq,
+        Vfwd,
+        RL1,
+        RL2,
+        C1,
+        C2,
+        RC1,
+        RC2,
+        Lf1,
+        Lf2,
+        RLf1,
+        RLf2,
+        Cf1,
+        Cf2,
+        RCf1,
+        RCf2,
+        f0,
+        numHarmonics,
+        numIterations,
+        sourceType,
+        loadType,
+        sourceValue_Vg_Ig,
+        loadValue_RL_VL_IL_PL,
+        RonACeq,
+        rectDrivenType,
+        compensation,
+        rampUpChoice
+      );
+      plotAndDisplayTimeSimResults(
+        timeDomainData.i1,
+        timeDomainData.i2,
+        timeDomainData.sw1,
+        timeDomainData.VDC,
+        timeDomainData.efficiency,
+        timeDomainData.tvec,
+        timeDomainData.F,
+        loadValue_RL_VL_IL_PL
+      );
+      i1 = timeDomainData.i1;
+      i2 = timeDomainData.i2;
+      sw = timeDomainData.sw1;
+      tvec = timeDomainData.tvec;
+    }
+    if (genCSV == 1) {
+      downloadCSVwithTimeDomain(
+        freq,
+        efficiency,
+        PL,
+        P1,
+        P2,
+        magV1,
+        magI1,
+        magV2,
+        magI2,
+        angZin,
+        magZin,
+        VL,
+        IL,
+        Vg,
+        Ig,
+        RL,
+        PlossRectifier,
+        PlossInverter,
+        PlossC1,
+        PlossC2,
+        PlossL1,
+        PlossL2,
+        magIC1,
+        magIC2,
+        magIL1,
+        magIL2,
+        magVC1,
+        magVC2,
+        PlossCf1,
+        PlossCf2,
+        PlossLf1,
+        PlossLf2,
+        magICf1,
+        magICf2,
+        magILf1,
+        magILf2,
+        magVCf1,
+        magVCf2,
+        i1,
+        i2,
+        sw,
+        tvec
+      );
+    }
+  }
+
   if (genCSV == 1) {
-    downloadCSV(
-      freq,
-      efficiency,
-      PL,
-      P1,
-      P2,
-      magV1,
-      magI1,
-      magV2,
-      magI2,
-      angZin,
-      magZin,
-      VL,
-      IL,
-      Vg,
-      Ig,
-      RL,
-      PlossRectifier,
-      PlossInverter,
-      PlossC1,
-      PlossC2,
-      PlossL1,
-      PlossL2,
-      magIC1,
-      magIC2,
-      magIL1,
-      magIL2,
-      magVC1,
-      magVC2,
-      PlossCf1,
-      PlossCf2,
-      PlossLf1,
-      PlossLf2,
-      magICf1,
-      magICf2,
-      magILf1,
-      magILf2,
-      magVCf1,
-      magVCf2
-    );
+    if (enableTimeDomainChoice == 2) {
+      downloadCSV(
+        freq,
+        efficiency,
+        PL,
+        P1,
+        P2,
+        magV1,
+        magI1,
+        magV2,
+        magI2,
+        angZin,
+        magZin,
+        VL,
+        IL,
+        Vg,
+        Ig,
+        RL,
+        PlossRectifier,
+        PlossInverter,
+        PlossC1,
+        PlossC2,
+        PlossL1,
+        PlossL2,
+        magIC1,
+        magIC2,
+        magIL1,
+        magIL2,
+        magVC1,
+        magVC2,
+        PlossCf1,
+        PlossCf2,
+        PlossLf1,
+        PlossLf2,
+        magICf1,
+        magICf2,
+        magILf1,
+        magILf2,
+        magVCf1,
+        magVCf2
+      );
+    }
   }
 
   document.getElementById("resultsMessage").innerHTML =

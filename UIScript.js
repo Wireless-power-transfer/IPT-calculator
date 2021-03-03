@@ -1,5 +1,45 @@
 var open = 0; //1 means the sidebar is open. This is used by the sticky button that asks to close sidebar or not.
 
+//The purpose of this code is to expand the time-domain simulation options (allowing more input choices) when a user enables the time-domain simulation by selecting the relevant check box.
+document
+  .getElementById("enableTimeDomainChoice")
+  .addEventListener("change", () => {
+    // Get value
+    let sourceType = sourceSelectFunction(); //Indicates source type. Will return 1 for Vg or 2 for Ig
+    let loadType = loadSelectFunction(); //Indicates load type. Will return RL,VL, IL, or PL
+    let compensationType = document.getElementById("compensation").value;
+
+    let choice = Number(
+      document.getElementById("enableTimeDomainChoice").value
+    );
+    // If the checkbox is checked, display the output text
+    switch (choice) {
+      case 1: //time domain option selected
+        //Default:
+        document.getElementById("TimeDomainInputtext").style.display = "none";
+        document.getElementById("time-domain-area").style.display = "none";
+        document.getElementById("time-domain-enable-message").innerHTML =
+          "Time domain option only available for voltage sources with resistive loads. Time domain option is also not available for series-parallel compensation.";
+
+        if (sourceType == 1 && loadType == 1 && compensationType != 2) {
+          document.getElementById("TimeDomainInputtext").style.display =
+            "inline";
+          document.getElementById("time-domain-area").style.display = "inline";
+          document.getElementById("time-domain-enable-message").innerHTML = "";
+        }
+
+        break;
+      case 2: //time domain option not selected
+        document.getElementById("TimeDomainInputtext").style.display = "none";
+        document.getElementById("time-domain-area").style.display = "none";
+        document.getElementById("time-domain-enable-message").innerHTML =
+          "Time domain option not enabled.";
+
+        //"Time domain option not selected.";
+        break;
+    }
+  });
+
 //The purpose of this code is to expand the proper window (allowing more input choices) when a user selects an adanced compensation scheme (i.e., LCC-series or LCC-LCC)
 document.getElementById("compensation").addEventListener("change", () => {
   let compensation = Number(document.getElementById("compensation").value);
