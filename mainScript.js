@@ -57,6 +57,16 @@ function buttonFunction(genCSV) {
     document.getElementById("enableTimeDomainChoice").value
   ); //relative tolerance for LM algorithm
 
+  //Current source type only works with constant resistive load
+  if (sourceType == 2) {
+    if (loadType != 1) {
+      document.getElementById("load").value = 1;
+      window.alert(
+        "Only constant resistance load type available for constant current source. Changing load type to constant resistance load."
+      );
+    }
+  }
+
   //Calculate and define other parameters and variables:
   let f01 = 1 / math.sqrt(L1 * C1) / 2 / math.pi; //resonant frequenc of primary
   let f02 = 1 / math.sqrt(L2 * C2) / 2 / math.pi; //resonant frequency of secondary
@@ -843,11 +853,22 @@ class TotalIPTSystem {
     }
 
     if (sourceType == 2 && loadType == 1) {
-      //Ig and RL
-      this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
-      this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
+      //Ig and RL... This is NOT trivial like I first thought... second attempt here...
+      this.Ig = sourceValue_Vg_Ig;
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
       this.ReL = (this.RL * this.rectR_tf) / this.etaDiode; //calculate effective AC resistance
+      let ZinAC = math.divide(
+        math.add(math.multiply(this.A, this.ReL), this.B),
+        math.add(math.multiply(this.C, this.ReL), this.D)
+      );
+      let gv1 = (2 * invConst) / math.pi;
+      let reI1 = (2 * this.Ig) / gv1;
+      let imI1 = (-reI1 * math.im(ZinAC)) / math.re(ZinAC);
+      this.I1 = math.complex(reI1, imI1);
+
+      //DC input current is defined by user
+      //this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
+
       this.I2 = math.divide(
         this.I1,
         math.add(math.multiply(this.C, this.ReL), this.D)

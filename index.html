@@ -25,7 +25,7 @@
       <label for="sourceType">Source type:</label>
       <select id="source" onchange="sourceSelectFunction()" class="pullDownMenu">
         <option value="1" class="textInput">Constant voltage</option>
-        <!-- <option value="2" class="textInput">Constant current</option> -->
+        <option value="2" class="textInput">Constant current</option>
       </select>
   </div>
   <div class = "variableLabel"><label id="sourceTypeLabel"> &nbsp;&nbsp;Source voltage (DC), <span style='font-family:Times New Roman'><i>V</i><sub>g</sub> </span>  (V):</label><input type="text" id="Vg_Ig" value="500" class="textInput" onchange="updateHash()">
@@ -197,7 +197,7 @@ with the corresponding values and analyze.
       <select name="presetChoice" id="presetChoice" class="pullDownMenu" onchange="presetFun()"> 
         <option value="1">Default</option>
         <option value="2">V.P. Galigekere, et al., LCC-series, 22 kHz, 10kW, k=0.265, Oak Ridge National Lab, 2018. </option>
-        <option value="3">Y. Fang, et al., series-series, 10W, 94 kHz, k=0.6, University of Hong Kong, 2019.</option>
+        <option value="3">Y. Fang, et al., series-series, 10W, 80 kHz, k=0.6, University of Hong Kong, 2019.</option>
         <option value="4">A. Scher, et al., series-series, 5W CPL, 175.5 kHz, k=0.206, Oregon Tech, 2020.</option>
     </select>
   </div>
@@ -343,7 +343,6 @@ I would like to thank Mostak Mohammad for his valuable feedback and helpful disc
 
 <h2>To-do list</h2>
 <ul>
-<li>Add current as an optional source type.</li>
 <li>Add more preset configurations.</li>
 <li>Extend time-domain analysis to voltage load type.</li>
 <li>Extend time-domain analysis to series-parallel compensation.</li>
