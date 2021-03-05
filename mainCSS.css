@@ -244,9 +244,17 @@ font-family:'Times New Roman', Times, serif
 }
 
 #calculatorIcon:hover{
-  width: 23px;
+  width: 25px;
 }
 
+#linkedInIcon{
+  width: 20px;
+  padding: 0; 
+  vertical-align:middle;
+  transition: width .2s;
+  display:inline;
+  vertical-align: text-bottom;
+}
 
 #resonatorCalculator{
     display:in-block;
