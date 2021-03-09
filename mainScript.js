@@ -61,8 +61,9 @@ function buttonFunction(genCSV) {
   if (sourceType == 2) {
     if (loadType != 1) {
       document.getElementById("load").value = 1;
+      loadSelectFunction();
       window.alert(
-        "Only constant resistance load type available for constant current source. Changing load type to constant resistance load."
+        "Only constant resistance load type available for constant current source. Changing load type back to constant resistance load."
       );
     }
   }
