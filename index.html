@@ -42,7 +42,7 @@
       </select>
   </div>
   
-    <div class="variableLabel"><label id="loadTypeLabel"> Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (Ohm): </label><input type="text" id="RL_VL_IL_PL" value="5" class="textInput" onchange="updateHash()">
+    <div class="variableLabel"><label id="loadTypeLabel"> Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (<span style='font-family:Times New Roman'>&#8486;</span>): </label><input type="text" id="RL_VL_IL_PL" value="5" class="textInput" onchange="updateHash()">
     </div>
     <div class="variableLabel">
       <label for="inverter">Inverter type:</label>
@@ -51,7 +51,7 @@
         <option value="2">Full-bridge inverter</option>
     </select>
   </div>
-    <div class="variableLabel">&nbsp;&nbsp;FET on-resistance (Ohm): <input type="text" id="Ron" value="!" class="textInput" onchange="updateHash()">
+    <div class="variableLabel">&nbsp;&nbsp;FET on-resistance (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="Ron" value="!" class="textInput" onchange="updateHash()">
   </div>
 
   <div class="variableLabel">
@@ -62,7 +62,7 @@
     </select>
   </div>
 
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;Diode forward volt drop (V): <input type="text" id="Vfwd" value="!" class="textInput" onchange="updateHash()">
+  <div class="variableLabel">&nbsp;&nbsp;Diode forward volt drop (V): <input type="text" id="Vfwd" value="!" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableSubTitle"> Resonators: &nbsp;&nbsp;<a href="#resonatorCalculator"><img id="calculatorIcon" src="images/calculatorIcon.png"></a>  
   </div>
@@ -77,48 +77,58 @@
     </select>
   </div>
 
-  <div id = "lccSeriesButtonDisplayArea"> 
-    <div class="variableLabel">Primary LCC ind. <span style='font-family:Times New Roman'><i>L</i><sub>f1</sub> </span> (H): <input type="text" id="Lf1" value="3.7e-5" class="textInput" onchange="updateHash()">
+  
+
+   
+<div class="variableLabel"><b><i>Primary:</i></b></Primary></div>
+<div id = "lccSeriesButtonDisplayArea"> 
+    <div id="sideBarResonatorInputs">
+    <div class="variableLabel"><span style='font-family:Times New Roman'><i>L</i><sub>f1</sub> </span> (H): <input type="text" id="Lf1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Lf1</sub> </span> (Ohm): <input type="text" id="RLf1" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"> <span style='font-family:Times New Roman'><i>R</i><sub>Lf1</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RLf1" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
 
-    <div class="variableLabel">Primary LCC cap. <span style='font-family:Times New Roman'><i>C</i><sub>f1</sub> </span> (F): <input type="text" id="Cf1" value="3.7e-5" class="textInput" onchange="updateHash()">
+    <div class="variableLabel"><span style='font-family:Times New Roman'><i>C</i><sub>f1</sub> </span> (F): <input type="text" id="Cf1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Cf1</sub> </span> (Ohm): <input type="text" id="RCf1" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>Cf1</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>: <input type="text" id="RCf1" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
-
-
-
   </div>
-
-   <div id = "lccLCCButtonDisplayArea"> 
-     <div class="variableLabel">Secondary LCC ind. <span style='font-family:Times New Roman'><i>L</i><sub>f2</sub> </span> (H): <input type="text" id="Lf2" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Lf2</sub> </span> (Ohm): <input type="text" id="RLf2" value="45e-3" class="textInput" onchange="updateHash()">
+<div id="sideBarResonatorInputs">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>L</i><sub>1</sub> </span> (H): <input type="text" id="L1" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-
-    <div class="variableLabel">Secondary LCC cap. <span style='font-family:Times New Roman'><i>C</i><sub>f2</sub> </span> (F): <input type="text" id="Cf2" value="3.7e-5" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>L1</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RL1" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>Cf2</sub> </span> (Ohm): <input type="text" id="RCf2" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>C</i><sub>1</sub> </span> (F): <input type="text" id="C1" value="9.48e-5" class="textInput" onchange="updateHash()">
+  </div>
+ <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>C1</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RC1" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
 </div>
+  <div class="variableLabel"><b><i>Secondary:</i></b></Primary></div>
+<div id = "lccLCCButtonDisplayArea"> 
+         <div id="sideBarResonatorInputs">
 
-  <div class="variableLabel">Primary ind. <span style='font-family:Times New Roman'><i>L</i><sub>1</sub> </span> (H): <input type="text" id="L1" value="3.7e-5" class="textInput" onchange="updateHash()">
+     <div class="variableLabel"><span style='font-family:Times New Roman'><i>L</i><sub>f2</sub> </span> (H): <input type="text" id="Lf2" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>L1</sub> </span> (Ohm): <input type="text" id="RL1" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>Lf2</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RLf2" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">Primary cap. <span style='font-family:Times New Roman'><i>C</i><sub>1</sub> </span> (F): <input type="text" id="C1" value="9.48e-5" class="textInput" onchange="updateHash()">
+
+    <div class="variableLabel"><span style='font-family:Times New Roman'><i>C</i><sub>f2</sub> </span> (F): <input type="text" id="Cf2" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
- <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>C1</sub> </span> (Ohm): <input type="text" id="RC1" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>Cf2</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RCf2" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">Secondary ind. <span style='font-family:Times New Roman'><i>L</i><sub>2</sub> </span> (H): <input type="text" id="L2" value="3.7e-5" class="textInput" onchange="updateHash()">
+</div>
+</div>
+
+<div id="sideBarResonatorInputs">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>L</i><sub>2</sub> </span> (H): <input type="text" id="L2" value="3.7e-5" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>L2</sub> </span> (Ohm): <input type="text" id="RL2" value="45e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>L2</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RL2" value="45e-3" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">Secondary cap. <span style='font-family:Times New Roman'><i>C</i><sub>2</sub> </span> (F): <input type="text" id="C2" value="1e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>C</i><sub>2</sub> </span> (F): <input type="text" id="C2" value="1e-3" class="textInput" onchange="updateHash()">
   </div>
-  <div class="variableLabel">&nbsp;&nbsp;&nbsp;&nbsp;ESR <span style='font-family:Times New Roman'><i>R</i><sub>C2</sub> </span> (Ohm): <input type="text" id="RC2" value="1e-3" class="textInput" onchange="updateHash()">
+  <div class="variableLabel"><span style='font-family:Times New Roman'><i>R</i><sub>C2</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="RC2" value="1e-3" class="textInput" onchange="updateHash()">
+  </div>
   </div>
 
   <div class="variableLabel">Coupling coefficient, <span style='font-family:Times New Roman'><i>k</i></span>  <input type="text" id="k" value=".21" class="textInput" onchange="updateHash()">
@@ -291,7 +301,7 @@ Select the loss of the inductor and capacitor below. Press calculate to find the
   <option value="3" class="textInput">Inductor dissipation factor (tan&#948;) at resonance</option>
   </select>
 
-  <div class="LcCalculatorLabel"><label id ="lcCalcIndLossText"> &nbsp;&nbsp;&nbsp;Inductor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>L</sub> </span> (Ohm): </label><input type="text" id="LCalcLoss" value="45e-3" class="textInput">
+  <div class="LcCalculatorLabel"><label id ="lcCalcIndLossText"> &nbsp;&nbsp;&nbsp;Inductor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>L</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>): </label><input type="text" id="LCalcLoss" value="45e-3" class="textInput">
 
   </div>
   
@@ -302,7 +312,7 @@ Select the loss of the inductor and capacitor below. Press calculate to find the
   <option value="2" class="textInput">Capacitor Q-factor at resonance</option>
   <option value="3" class="textInput">Capacitor dissipation factor (tan&#948;) at resonance</option>
   </select>
-  <div class="LcCalculatorLabel"><label id ="lcCalcCapLossText">&nbsp;&nbsp;&nbsp;Capacitor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>C</sub> </span> (Ohm):</label> <input type="text" id="CCalcLoss" value="1e-3" class="textInput">
+  <div class="LcCalculatorLabel"><label id ="lcCalcCapLossText">&nbsp;&nbsp;&nbsp;Capacitor's series resistance, <span style='font-family:Times New Roman'><i>R</i><sub>C</sub> </span> (<span style='font-family:Times New Roman'>&#8486;</span>):</label> <input type="text" id="CCalcLoss" value="1e-3" class="textInput">
   </div>
   <br>
 <button type="button" class="buttonStyle2" onclick="calculateLCResonatorCalc()">Calculate</button>

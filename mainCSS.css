@@ -16,8 +16,11 @@ body {
 #presetDescription { 
   background-color: yellow;
   font: caption;
-  
+}
 
+#sideBarResonatorInputs { 
+text-align: right;
+padding-right: 160px; 
 }
 
 

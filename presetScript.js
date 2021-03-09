@@ -3,7 +3,7 @@ function presetFun() {
 
   if (presetChoice == 1) {
     hashString =
-      "#source=1&load=1&inverter=2&rectifier=2&fmin=75e3&fmax=95e3&fnum=250&Vg_Ig=500&RL_VL_IL_PL=5&k=0.21&L1=37e-6&L2=37e-6&Ron=30e-3&Vfwd=0.4&RL1=45e-3&RL2=45e-3&RC1=1e-3&RC2=1e-3&C1=9.5e-8&C2=9.5e-8&compensation=1&Lf1=5E-6&RLf1=10E-3&Cf1=9.5E-8&RCf1=10E-3&Lf2=5E-6&RLf2=10E-3&Cf2=9.5E-8&RCf2=10E-3&f0=75E3&numHarmonics=10&numIterations=10&enableTimeDomainChoice=0&rampUpChoice=1";
+      "#source=1&load=1&inverter=2&rectifier=2&fmin=75e3&fmax=95e3&fnum=250&Vg_Ig=500&RL_VL_IL_PL=5&k=0.21&L1=37e-6&L2=37e-6&Ron=30e-3&Vfwd=0.4&RL1=45e-3&RL2=45e-3&RC1=1e-3&RC2=1e-3&C1=9.5e-8&C2=9.5e-8&compensation=1&Lf1=5E-6&RLf1=10E-3&Cf1=9.5E-8&RCf1=10E-3&Lf2=5E-6&RLf2=10E-3&Cf2=9.5E-8&RCf2=10E-3&f0=75E3&numHarmonics=10&numIterations=10&enableTimeDomainChoice=2&rampUpChoice=1";
     document.getElementById("presetDescription").innerHTML = "";
   }
 
@@ -11,7 +11,7 @@ function presetFun() {
     hashString =
       "#source=1&load=1&inverter=2&rectifier=2&fmin=10e3&fmax=40e3&fnum=250&Vg_Ig=354.9&RL_VL_IL_PL=13&k=0.265&L1=105.6E-6&L2=106.4E-6&Ron=10e-3&Vfwd=0.3&RL1=30e-3&RL2=30e-3&RC1=10e-3&RC2=10e-3&C1=0.71E-6&C2=0.71E-6&compensation=3&Lf1=26.98E-6&RLf1=10E-3&Cf1=2.24E-6&RCf1=10E-3&Lf2=5E-6&RLf2=10E-3&Cf2=9.5E-8&RCf2=10E-3&f0=22E3&numHarmonics=50&numIterations=15&enableTimeDomainChoice=1&rampUpChoice=2";
     document.getElementById("presetDescription").innerHTML =
-      "<b>Selected preset configuration parameters from following reference (note that component loss were not given in paper):</b> V. P. Galigekere, O. Onar, J. Pries, S. Zou, Z. Wang and M. Chinthavali, 'Sensitivity Analysis of Primary-Side LCC and Secondary-Side Series Compensated Wireless Charging System,' 2018 IEEE Transportation Electrification Conference and Expo (ITEC), Long Beach, CA, USA, 2018, pp. 885-891, doi: 10.1109/ITEC.2018.8450163.";
+      "<b>Selected preset configuration parameters from following reference (note that component losses were not given in paper):</b> V. P. Galigekere, O. Onar, J. Pries, S. Zou, Z. Wang and M. Chinthavali, 'Sensitivity Analysis of Primary-Side LCC and Secondary-Side Series Compensated Wireless Charging System,' 2018 IEEE Transportation Electrification Conference and Expo (ITEC), Long Beach, CA, USA, 2018, pp. 885-891, doi: 10.1109/ITEC.2018.8450163.";
   }
 
   if (presetChoice == 3) {

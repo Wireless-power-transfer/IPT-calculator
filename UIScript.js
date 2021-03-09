@@ -108,7 +108,7 @@ function loadSelectFunction() {
   if (loadType == 1) {
     //RL
     document.getElementById("loadTypeLabel").innerHTML =
-      "&nbsp;&nbsp;Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (Ohm): ";
+      "&nbsp;&nbsp;Load resistance, <span style='font-family:Times New Roman'><i> R<sub>L</sub> </i></span> (<span style='font-family:Times New Roman'>&#8486;</span>): ";
   }
   if (loadType == 2) {
     //VL
