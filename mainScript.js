@@ -384,9 +384,9 @@ function buttonFunction(genCSV) {
           V1[i] = SSIPT_System.V1; //we need
           I1[i] = SSIPT_System.I1;
 
-          ZLf1 = math.add(RLf1, 2 * math.pi * freq[i] * Lf1); // impedance of Lf1
-          VCf1 = math.subtract(V1[i], math.multiply(I1[i], ZLf1)); //Voltage across Cf1
+          ZLf1 = math.complex(RLf1, 2 * math.pi * freq[i] * Lf1); // impedance of Lf1
           ZCf1 = math.complex(RCf1, -1 / 2 / math.pi / freq[i] / Cf1); //impedance of Cf1
+          VCf1 = math.subtract(V1[i], math.multiply(I1[i], ZLf1)); //Voltage across Cf1
           ICf1 = math.divide(VCf1, ZCf1); //current through Cf1
           IL1 = math.subtract(I1[i], ICf1);
 
