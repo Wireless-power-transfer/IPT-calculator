@@ -16,21 +16,35 @@ document
     switch (choice) {
       case 1: //time domain option selected
         //Default:
-        document.getElementById("TimeDomainInputtext").style.display = "none";
+        document.getElementById("TimeDomainInputtext1").style.display = "none";
+        document.getElementById("TimeDomainInputtext2").style.display = "none";
+
         document.getElementById("time-domain-area").style.display = "none";
         document.getElementById("time-domain-enable-message").innerHTML =
           "Time domain option only available for voltage sources with resistive loads. Time domain option is also not available for series-parallel compensation.";
 
         if (sourceType == 1 && loadType == 1 && compensationType != 2) {
-          document.getElementById("TimeDomainInputtext").style.display =
+          document.getElementById("TimeDomainInputtext1").style.display =
             "inline";
+          document.getElementById("TimeDomainInputtext2").style.display =
+            "inline";
+          document.getElementById("time-domain-area").style.display = "inline";
+          document.getElementById("time-domain-enable-message").innerHTML = "";
+        }
+
+        if (sourceType == 1 && loadType == 2 && compensationType != 2) {
+          document.getElementById("TimeDomainInputtext1").style.display =
+            "inline";
+          //document.getElementById("TimeDomainInputtext2").style.display =
+          //  "inline";
           document.getElementById("time-domain-area").style.display = "inline";
           document.getElementById("time-domain-enable-message").innerHTML = "";
         }
 
         break;
       case 2: //time domain option not selected
-        document.getElementById("TimeDomainInputtext").style.display = "none";
+        document.getElementById("TimeDomainInputtext1").style.display = "none";
+        document.getElementById("TimeDomainInputtext2").style.display = "none";
         document.getElementById("time-domain-area").style.display = "none";
         document.getElementById("time-domain-enable-message").innerHTML =
           "Time domain option not enabled.";

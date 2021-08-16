@@ -524,6 +524,57 @@ function buttonFunction(genCSV) {
       sw = timeDomainData.sw1;
       tvec = timeDomainData.tvec;
     }
+    if (loadType == 2 && sourceType == 1 && compensation != 2) {
+      console.log("test");
+      timeDomainData = timeSimSourceType1LoadType2(
+        k,
+        M,
+        L1,
+        L2,
+        invConst,
+        rectConst,
+        RonACeq,
+        Vfwd,
+        RL1,
+        RL2,
+        C1,
+        C2,
+        RC1,
+        RC2,
+        Lf1,
+        Lf2,
+        RLf1,
+        RLf2,
+        Cf1,
+        Cf2,
+        RCf1,
+        RCf2,
+        f0,
+        numHarmonics,
+        sourceType,
+        loadType,
+        sourceValue_Vg_Ig,
+        loadValue_RL_VL_IL_PL,
+        RonACeq,
+        rectDrivenType,
+        compensation
+      );
+      i1 = timeDomainData.i1;
+      i2 = timeDomainData.i2;
+      sw = timeDomainData.v1;
+      tvec = timeDomainData.timeVec;
+
+      plotAndDisplayTimeSimResults2(
+        timeDomainData.i1,
+        timeDomainData.i2,
+        timeDomainData.v1,
+        timeDomainData.timeVec,
+        timeDomainData.PL,
+        timeDomainData.RL,
+        timeDomainData.efficiency
+      );
+    }
+
     if (genCSV == 1) {
       downloadCSVwithTimeDomain(
         freq,

@@ -156,11 +156,13 @@
 
 
 
-<div id="TimeDomainInputtext">
+<div id="TimeDomainInputtext1">
   <div class="variableLabel">Operating frequency (Hz) <input type="text" id="f0" class="textInput" onchange="updateHash()">
   </div>
   <div class="variableLabel">Number of odd harmonics <input type="text" id="numHarmonics" class="textInput" onchange="updateHash()">
   </div>
+</div>
+  <div id="TimeDomainInputtext2">
    <div class="variableLabel">Solver's max iteration limit <input type="text" id="numIterations" class="textInput" onchange="updateHash()">
   </div>
     
@@ -385,8 +387,10 @@ This calculator performs circuit analysis by finding the ABCD-parameters of the 
 <script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
 <script type="text/javascript" src="UIScript.js"></script> <!-- Controls user interface things like the sticky button that asks to close sidebar or not, etc.-->
 <script type="text/javascript" src="CSVScript.js"></script> <!-- Implements the download output as CSV button function .-->
-<script type="text/javascript" src="timeDomainSimScript.js"></script> <!-- Implements the download output as CSV button function .-->
+<script type="text/javascript" src="timeDomainSimScriptSourceType1LoadType1.js"></script> <!-- Implements the download output as CSV button function .-->
+<script type="text/javascript" src="timeDomainSimScriptSourceType1LoadType2.js"></script> <!-- Implements the download output as CSV button function .-->
 <script type="text/javascript" src="plotAndDisplayTimeSimResults.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
+<script type="text/javascript" src="plotAndDisplayTimeSimResults2.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
 <script type="text/javascript" src="presetScript.js"></script> <!-- Contains custom js function for generating preset configuraitons-->
 
 </body>
