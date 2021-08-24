@@ -45,7 +45,7 @@ var hashNames = [
   "k",
   "L1",
   "L2",
-  "Ron",
+  "D",
   "Vfwd",
   "RL1",
   "RL2",
@@ -64,9 +64,7 @@ var hashNames = [
   "RCf2",
   "f0",
   "numHarmonics",
-  "numIterations",
   "enableTimeDomainChoice",
-  "rampUpChoice",
 ];
 
 //These are the default values of the id names saved in the variable hashNames
@@ -83,7 +81,7 @@ var hashDefaultValues = [
   "0.21",
   "37e-6",
   "37e-6",
-  "30e-3",
+  "0.5",
   "0.4",
   "45e-3",
   "45e-3",
@@ -102,9 +100,7 @@ var hashDefaultValues = [
   "10E-3",
   "75E3",
   "10",
-  "10",
   "2",
-  "1",
 ];
 
 //Set the default hash string

@@ -11,10 +11,11 @@ function plotAndDisplayTimeSimResults2(i1, i2, sw1, tvec, PL, RL, efficiency) {
   let VDC = 0;
 
   efficiencyMessage = "Efficiency = " + efficiency.toFixed(5);
-  outputVoltageMessage = "Effective load resistance = " + RL.toFixed(5) + "Ohm";
+  outputVoltageMessage =
+    "Effective load resistance = " + RL.toFixed(5) + " Ohm";
   outputPowerMessage = "Output Power = " + PL.toFixed(5) + " W";
-  IS1offMessage =
-    "Switch off current (IS1off) = " + i1FallingEdge.toFixed(5) + " A";
+  //IS1offMessage =
+  //  "Switch off current (IS1off) = " + i1FallingEdge.toFixed(5) + " A";
 
   //Update time-domain analysis message:
   document.getElementById("timeDomainMessage").innerHTML =

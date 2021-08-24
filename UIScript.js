@@ -17,20 +17,10 @@ document
       case 1: //time domain option selected
         //Default:
         document.getElementById("TimeDomainInputtext1").style.display = "none";
-        document.getElementById("TimeDomainInputtext2").style.display = "none";
 
         document.getElementById("time-domain-area").style.display = "none";
         document.getElementById("time-domain-enable-message").innerHTML =
-          "Time domain option only available for voltage sources with resistive loads. Time domain option is also not available for series-parallel compensation.";
-
-        if (sourceType == 1 && loadType == 1 && compensationType != 2) {
-          document.getElementById("TimeDomainInputtext1").style.display =
-            "inline";
-          document.getElementById("TimeDomainInputtext2").style.display =
-            "inline";
-          document.getElementById("time-domain-area").style.display = "inline";
-          document.getElementById("time-domain-enable-message").innerHTML = "";
-        }
+          "Time domain option only available for voltage sources with voltage loads. Time domain option is also not available for series-parallel compensation.";
 
         if (sourceType == 1 && loadType == 2 && compensationType != 2) {
           document.getElementById("TimeDomainInputtext1").style.display =
@@ -44,7 +34,6 @@ document
         break;
       case 2: //time domain option not selected
         document.getElementById("TimeDomainInputtext1").style.display = "none";
-        document.getElementById("TimeDomainInputtext2").style.display = "none";
         document.getElementById("time-domain-area").style.display = "none";
         document.getElementById("time-domain-enable-message").innerHTML =
           "Time domain option not enabled.";
@@ -144,5 +133,16 @@ function loadSelectFunction() {
     document.getElementById("loadTypeLabel").innerHTML =
       "&nbsp;&nbsp;Load power, <span style='font-family:Times New Roman'><i> P<sub>L</sub> </i></span> (W): ";
   }
+  //THe purpose of this code snippet below is to only show the enable time domain box when source type = 1 and load type =2
+  if (loadType == 2) {
+    let sourceType = sourceSelectFunction(); //Indicates source type. Will return 1 for Vg or 2 for Ig
+    if (sourceType == 1) {
+      document.getElementById("TimeDomainEnableButton").style.display =
+        "inline";
+    }
+  } else {
+    document.getElementById("TimeDomainEnableButton").style.display = "none";
+  }
+
   return loadType;
 }

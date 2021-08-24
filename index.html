@@ -30,7 +30,28 @@
   </div>
   <div class = "variableLabel"><label id="sourceTypeLabel"> &nbsp;&nbsp;Source voltage (DC), <span style='font-family:Times New Roman'><i>V</i><sub>g</sub> </span>  (V):</label><input type="text" id="Vg_Ig" value="500" class="textInput" onchange="updateHash()">
   </div>
- 
+ <!DOCTYPE html>
+ <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+ <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+ <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+ <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+ <html>
+   <head>
+     <meta charset="utf-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title></title>
+     <meta name="description" content="">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" href="">
+   </head>
+   <body>
+     <!--[if lt IE 7]>
+       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+     <![endif]-->
+     
+     <script src="" async defer></script>
+   </body>
+ </html>
   <div class="variableLabel">
        <label for="loadType">Load type:</label>
        <select id="load" onchange="loadSelectFunction()" class="pullDownMenu">
@@ -51,7 +72,7 @@
         <option value="2">Full-bridge inverter</option>
     </select>
   </div>
-    <div class="variableLabel">&nbsp;&nbsp;FET on-resistance (<span style='font-family:Times New Roman'>&#8486;</span>): <input type="text" id="Ron" value="!" class="textInput" onchange="updateHash()">
+    <div class="variableLabel">&nbsp;&nbsp;Duty cycle: <input type="text" id="D" value="!" class="textInput" onchange="updateHash()">
   </div>
 
   <div class="variableLabel">
@@ -143,15 +164,17 @@
   <div class="variableLabel">Number of data plot points: <input type="text" id="fnum" value="1000" class="textInput" onchange="updateHash()">
   </div>
 
-   <div class="variableSubTitle"> Time-domain analysis:
+   <div class="variableSubTitle"> Time-domain analysis*:
    </div>
 
+<div id="TimeDomainEnableButton">   
 <div class="variableLabel">
       <label for="enableTimeDomainChoice">Time-domain analysis:</label>
       <select name="enableTimeDomainChoice" id="enableTimeDomainChoice" class="pullDownMenu" onchange="updateHash()"> 
         <option value="1">Enable</option>
         <option value="2">Disable</option>
     </select>
+  </div>
   </div>
 
 
@@ -162,32 +185,21 @@
   <div class="variableLabel">Number of odd harmonics <input type="text" id="numHarmonics" class="textInput" onchange="updateHash()">
   </div>
 </div>
-  <div id="TimeDomainInputtext2">
-   <div class="variableLabel">Solver's max iteration limit <input type="text" id="numIterations" class="textInput" onchange="updateHash()">
-  </div>
-    
-
-<div class="variableLabel">
-      <label for="rampUpChoice">Initializaton options to help convergence:</label>
-      <select name="rampUpChoice" id="rampUpChoice" class="pullDownMenu" onchange="updateHash()"> 
-        <option value="1">Basic</option>
-        <option value="2">Thevenin method</option>
-        <option value="3">Ramp-up method</option>
-        <option value="4">Hybrid Thevenin/Ramp-up</option>
-    </select>
-  </div>
-
-
-  </div>
+  <small>*Only available if both source- and load-type options are set to consant voltage. Series-parallel compensation not supported.</small>
+  
   <p></p>
-
-<button type="button" class="buttonStyle1" onclick="resetAll()">Reset</button>
+  <button type="button" class="buttonStyle1" onclick="resetAll()">Reset</button>
 <button type="button" class = "buttonStyle1" onclick="buttonFunction(1)">Download output as CSV</button>
+
+</div>
+
+
+
+
 <p></p>
 
 
 </div>
-
 
 
 <div id="main">
@@ -356,13 +368,6 @@ I would like to thank Mostak Mohammad for his valuable feedback and helpful disc
 
 
 
-<h2>To-do list</h2>
-<ul>
-<li>Add more preset configurations.</li>
-<li>Extend time-domain analysis to voltage load type.</li>
-<li>Extend time-domain analysis to series-parallel compensation.</li>
-</ul>
-
 <h2>References</h2>
 <p>
 This calculator performs circuit analysis by finding the ABCD-parameters of the AC circuit and solving for unknown signals given the specified loading and source conditions. A discussion of constant power loads (i.e., "voltage driven" versus "current driven") are found in [1]. This calculator uses the transfer functions of inverters and rectifiers presented in [2] and [3]. A classic textbook that provides an in depth treatement of resonantors, Q factors, and related conversion formulas is [4]. 
@@ -387,7 +392,7 @@ This calculator performs circuit analysis by finding the ABCD-parameters of the 
 <script type="text/javascript" src="lcResCalcScript.js"></script> <!-- Contains custom js functions for implementing the little LC resonator calcultor-->
 <script type="text/javascript" src="UIScript.js"></script> <!-- Controls user interface things like the sticky button that asks to close sidebar or not, etc.-->
 <script type="text/javascript" src="CSVScript.js"></script> <!-- Implements the download output as CSV button function .-->
-<script type="text/javascript" src="timeDomainSimScriptSourceType1LoadType1.js"></script> <!-- Implements the download output as CSV button function .-->
+<script type="text/javascript" src="timeDomainSupport.js"></script> <!-- Implements the download output as CSV button function .-->
 <script type="text/javascript" src="timeDomainSimScriptSourceType1LoadType2.js"></script> <!-- Implements the download output as CSV button function .-->
 <script type="text/javascript" src="plotAndDisplayTimeSimResults.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->
 <script type="text/javascript" src="plotAndDisplayTimeSimResults2.js"></script> <!-- Contains custom js function for generating the plots using Plotly-->

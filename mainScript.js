@@ -28,7 +28,7 @@ function buttonFunction(genCSV) {
   let fnum = Number(document.getElementById("fnum").value); //number of frequency points in plot
   let invConst = Number(document.getElementById("inverter").value); //invConst = 1 (half bridge) and =2 (full bridge)
   let rectConst = Number(document.getElementById("rectifier").value); //rectConst = 1 (half bridge) and =2 (full bridge)
-  let Ron = Number(document.getElementById("Ron").value); //MOSFET on resistance
+  let dutyCycle = Number(document.getElementById("D").value); //MOSFET on resistance
   let Vfwd = Number(document.getElementById("Vfwd").value); //diode forward voltage
   let RL1 = Number(document.getElementById("RL1").value); //ESR of L1
   let RL2 = Number(document.getElementById("RL2").value); //ESR of L2
@@ -46,13 +46,13 @@ function buttonFunction(genCSV) {
   let RCf2 = Number(document.getElementById("RCf2").value); //ESR of LCC primary Cf2
   let f0 = Number(document.getElementById("f0").value); //operationg frequency for time domain simulation
   let numHarmonics = Number(document.getElementById("numHarmonics").value); //number of harmonics for time domain simulation
-  let numIterations = Number(document.getElementById("numIterations").value); //number of iterations for time domain simulation
+  let Ron = 0;
   //let samplingFactor = Number(document.getElementById("samplingFactor").value); //number of iterations for time domain simulation
   //let dampingFactor = Number(document.getElementById("dampingFactor").value); //damping factor for LM algorithm
   //let relativeTolerance = Number(
   //  document.getElementById("relativeTolerance").value
   //); //relative tolerance for LM algorithm
-  let rampUpChoice = Number(document.getElementById("rampUpChoice").value); //relative tolerance for LM algorithm
+  //let rampUpChoice = Number(document.getElementById("rampUpChoice").value); //relative tolerance for LM algorithm
   let enableTimeDomainChoice = Number(
     document.getElementById("enableTimeDomainChoice").value
   ); //relative tolerance for LM algorithm
@@ -319,7 +319,8 @@ function buttonFunction(genCSV) {
         loadType,
         sourceValue_Vg_Ig,
         loadValue_RL_VL_IL_PL,
-        invConst
+        invConst,
+        dutyCycle
       ); //find I1, I2, V1, and V2
 
       //////Define arrays for plotting. These arrays below are general, in that they hold for any SISO two-port IPT system (not just series-series):
@@ -473,59 +474,7 @@ function buttonFunction(genCSV) {
 
   //////FREQUENCY SWEEP END//////
   if (enableTimeDomainChoice == 1) {
-    if (loadType == 1 && sourceType == 1 && compensation != 2) {
-      let timeDomainData = timeSimSourceType1LoadType1(
-        k,
-        M,
-        L1,
-        L2,
-        invConst,
-        rectConst,
-        RonACeq,
-        Vfwd,
-        RL1,
-        RL2,
-        C1,
-        C2,
-        RC1,
-        RC2,
-        Lf1,
-        Lf2,
-        RLf1,
-        RLf2,
-        Cf1,
-        Cf2,
-        RCf1,
-        RCf2,
-        f0,
-        numHarmonics,
-        numIterations,
-        sourceType,
-        loadType,
-        sourceValue_Vg_Ig,
-        loadValue_RL_VL_IL_PL,
-        RonACeq,
-        rectDrivenType,
-        compensation,
-        rampUpChoice
-      );
-      plotAndDisplayTimeSimResults(
-        timeDomainData.i1,
-        timeDomainData.i2,
-        timeDomainData.sw1,
-        timeDomainData.VDC,
-        timeDomainData.efficiency,
-        timeDomainData.tvec,
-        timeDomainData.F,
-        loadValue_RL_VL_IL_PL
-      );
-      i1 = timeDomainData.i1;
-      i2 = timeDomainData.i2;
-      sw = timeDomainData.sw1;
-      tvec = timeDomainData.tvec;
-    }
     if (loadType == 2 && sourceType == 1 && compensation != 2) {
-      console.log("test");
       timeDomainData = timeSimSourceType1LoadType2(
         k,
         M,
@@ -557,7 +506,8 @@ function buttonFunction(genCSV) {
         loadValue_RL_VL_IL_PL,
         RonACeq,
         rectDrivenType,
-        compensation
+        compensation,
+        dutyCycle
       );
       i1 = timeDomainData.i1;
       i2 = timeDomainData.i2;
@@ -860,6 +810,7 @@ class TotalIPTSystem {
     this.rectI_tf = []; //rectifier current transfer function (depends if voltage or current driven rectifier)... Iin(AC) = IL*rectI_tf
     this.rectV_tf = []; //rectifier voltage transfer function (depends if voltage or current driven rectifier)... Vin(AC) = VL*rectI_tf
     this.rectR_tf = []; //rectifier resistance transfer function (depends if voltage or current driven rectifier)... Rin(AC) = RL*rectI_tf
+    this.dutyCycle = [];
   }
 
   SetRectTf(rectDrivenType, rectConst) {
@@ -883,14 +834,17 @@ class TotalIPTSystem {
     loadType,
     sourceValue_Vg_Ig,
     loadValue_RL_VL_IL_PL,
-    invConst
+    invConst,
+    dutyCycle
   ) {
     let errorFlag = 0;
+    this.dutyCycle = dutyCycle;
 
     if (sourceType == 1 && loadType == 1) {
       //Source = Vg and Load = RL
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
-      this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
+      this.V1 =
+        (this.Vg * 2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi; //calculate AC input voltage
       this.RL = loadValue_RL_VL_IL_PL; //Load resistance is defined by user
       this.ReL = (this.RL * this.rectR_tf) / this.etaDiode; //calculate effective AC resistance
       this.I2 = math.divide(
@@ -913,7 +867,7 @@ class TotalIPTSystem {
         math.add(math.multiply(this.A, this.ReL), this.B),
         math.add(math.multiply(this.C, this.ReL), this.D)
       );
-      let gv1 = (2 * invConst) / math.pi;
+      let gv1 = (2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi;
       let reI1 = (2 * this.Ig) / gv1;
       let imI1 = (-reI1 * math.im(ZinAC)) / math.re(ZinAC);
       this.I1 = math.complex(reI1, imI1);
@@ -935,7 +889,8 @@ class TotalIPTSystem {
     if (sourceType == 1 && loadType == 2) {
       //Source = Vg and Load = VL
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
-      this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
+      this.V1 =
+        (this.Vg * 2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi; //calculate AC input voltage
       this.magV2 = (loadValue_RL_VL_IL_PL * this.rectV_tf) / this.etaDiode; //AC voltage defined by user
 
       //Solve for ReL by solving quadratic equation: a_*ReL^2+b_*ReL+c_ = 0
@@ -984,7 +939,7 @@ class TotalIPTSystem {
     }
 
     if (sourceType == 2 && loadType == 2) {
-      //Ig and VL
+      /*//Ig and VL
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.magV2 = (loadValue_RL_VL_IL_PL * rectV_tf) / this.etaDiode; //AC load voltage defined by user's choice of VL
@@ -1032,14 +987,15 @@ class TotalIPTSystem {
         document.getElementById("errorMessage").innerHTML =
           "<span style='color:red'>Error detected. Unable to achieve specified output voltage for at least one frequency value in the span. All parameter values are set to zero in plots below at frequencies in which the desired output voltage is unable to be achieved.</span>";
       }
+    */
     }
 
     if (sourceType == 1 && loadType == 3) {
       //Vg and IL
 
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
-      this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
-      this.magI2 = loadValue_RL_VL_IL_PL * this.rectI_tf; ///AC current defined by user's choice of IL
+      this.V1 =
+        (this.Vg * 2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi; //calculate AC input voltage      this.magI2 = loadValue_RL_VL_IL_PL * this.rectI_tf; ///AC current defined by user's choice of IL
 
       let a_ = math.abs(this.A) ** 2;
       let b_ = math.add(
@@ -1088,7 +1044,7 @@ class TotalIPTSystem {
     }
 
     if (sourceType == 2 && loadType == 3) {
-      //Ig and IL
+      /*//Ig and IL
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.magI2 = loadValue_RL_VL_IL_PL * this.rectI_tf; ///AC current defined by user's choice of IL
@@ -1135,13 +1091,14 @@ class TotalIPTSystem {
         errorFlag = 1;
         document.getElementById("errorMessage").innerHTML =
           "<span style='color:red'>Error detected. Unable to achieve specified output current for at least one frequency value in the span. All parameter values are set to zero in plots below at frequencies in which the desired output current is unable to be achieved.</span>";
-      }
+      }*/
     }
 
     if (sourceType == 1 && loadType == 4) {
       //Vg and PLV
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
-      this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
+      this.V1 =
+        (this.Vg * 2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi; //calculate AC input voltage
       this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.B, this.A); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.V1, this.A); // equivalent thevenin voltage in terms of ABCD parameters
@@ -1173,7 +1130,8 @@ class TotalIPTSystem {
     if (sourceType == 1 && loadType == 5) {
       //Vg and PLI
       this.Vg = sourceValue_Vg_Ig; //DC input voltage is defined by user
-      this.V1 = (this.Vg * 2 * invConst) / math.pi; //calculate AC input voltage
+      this.V1 =
+        (this.Vg * 2 * invConst * math.sin(this.dutyCycle * math.pi)) / math.pi; //calculate AC input voltage
       this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
       let Zth = math.divide(this.B, this.A); //Equivalent thevenin impedance in terms of ABCD parameters
       let Vth = math.divide(this.V1, this.A); // equivalent thevenin voltage in terms of ABCD parameters
@@ -1203,7 +1161,7 @@ class TotalIPTSystem {
     }
 
     if (sourceType == 2 && loadType == 4) {
-      //Ig and PLV
+      /*//Ig and PLV
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
@@ -1230,11 +1188,11 @@ class TotalIPTSystem {
         errorFlag = 1;
         document.getElementById("errorMessage").innerHTML =
           "<span style='color:red'>Error detected. Unable to achieve specified output power for at least one frequency value in the span. All parameter values are set to zero in plots below at frequencies in which the desired output power is unable to be achieved.</span>";
-      }
+      }*/
     }
 
     if (sourceType == 2 && loadType == 5) {
-      //Ig and PLI
+      /*//Ig and PLI
       this.Ig = sourceValue_Vg_Ig; //DC input current is defined by user
       this.I1 = (this.Ig * math.pi) / invConst; //AC current I1 calculated using Ig defined by user
       this.P2 = loadValue_RL_VL_IL_PL / this.etaDiode; ///Load power
@@ -1261,7 +1219,7 @@ class TotalIPTSystem {
         errorFlag = 1;
         document.getElementById("errorMessage").innerHTML =
           "<span style='color:red'>Error detected. Unable to achieve specified output power for at least one frequency value in the span. All parameter values are set to zero in plots below at frequencies in which the desired output power is unable to be achieved.</span>";
-      }
+      }*/
     }
 
     if (errorFlag == 1) {

@@ -29,10 +29,13 @@ function timeSimSourceType1LoadType2(
   loadValue_RL_VL_IL_PL,
   RonACeq,
   rectDrivenType,
-  compensation
+  compensation,
+  dutyCycle
 ) {
   //console.log("Time domain function called!");
-
+  let correctDelay = [];
+  let correctOutputDutyCycle = [];
+  let maxIndicesValue;
   let timeWindow = 2 / f0;
   let freq = f0;
   let T0 = 1 / f0;
@@ -61,26 +64,68 @@ function timeSimSourceType1LoadType2(
   let coefC = [];
   let coefD = [];
   let ABCD = [];
-  let numDelayPoints = 200; //hard code it in
+  let numDelayPoints = 50; //hard code it in
   let delayStart = -T0 / 2;
   let delayEnd = T0 / 2;
   let delayDelta = -(delayStart - delayEnd) / (numDelayPoints - 1);
   let delayVec = [];
   let delay = [];
-  let PL = []; //POWER DELIVERED TO LOAD (WILL WORK ON THIS LATER)
-  let RL = []; //EQUIVALENT LOAD RESISTNECE (WILL WORK ON THIS LATER)
-  let efficiency = []; //POWER TRANSFER EFFICIENCY (WILL WORK ON THIS LATER)
+  let objFunc = [];
+  let V2_n_nD = [];
+
   for (i = 0; i < numDelayPoints; i++) {
     delayVec[i] = delayStart + i * delayDelta;
   }
-  let MaxIndexValue = [];
 
-  for (n = 0; n < numHarmonics; n++) {
-    nodd = (n + 1) * 2 - 1;
-    f_n[n] = f0 * nodd;
+  let outputDutyCycleVec = new Array();
+
+  let outputDutyCycle = [];
+  let numOutputDutyCyclePoints = [];
+  let outputDutyCycleStart = [];
+  let dutyDutyCycleEnd = [];
+  let outputDutyCycleDelta = [];
+
+  if (invConst == 2 || dutyCycle == 0.5) {
+    outputDutyCycleVec[0] = 0.5;
+    numOutputDutyCyclePoints = 1;
+  } else {
+    numOutputDutyCyclePoints = 50; //hard code it in
+    if (dutyCycle < 0.5) {
+      outputDutyCycleStart = dutyCycle;
+      dutyDutyCycleEnd = 0.52;
+    }
+    if (dutyCycle > 0.5) {
+      outputDutyCycleStart = 0.48;
+      dutyDutyCycleEnd = dutyCycle;
+    }
+    outputDutyCycleDelta =
+      -(outputDutyCycleStart - dutyDutyCycleEnd) /
+      (numOutputDutyCyclePoints - 1);
+
+    for (i = 0; i < numOutputDutyCyclePoints; i++) {
+      outputDutyCycleVec[i] = outputDutyCycleStart + i * outputDutyCycleDelta;
+    }
+  }
+
+  //
+  let PL = []; //POWER DELIVERED TO LOAD (WILL WORK ON THIS LATER)
+  let RL = []; //EQUIVALENT LOAD RESISTNECE (WILL WORK ON THIS LATER)
+  let efficiency = []; //POWER TRANSFER EFFICIENCY (WILL WORK ON THIS LATER)
+
+  let MaxIndexValue = [];
+  for (n = 1; n < numHarmonics + 1; n++) {
+    f_n[n] = f0 * n;
     freq = f_n[n];
-    V1_n[n] =
-      ((Vg * 2 * invConst) / math.pi / nodd) * math.sin((nodd * math.pi) / 2);
+    if (invConst == 1) {
+      V1_n[n] = ((Vg * 2) / math.pi / n) * math.sin(n * math.pi * dutyCycle);
+    }
+
+    if (invConst == 2) {
+      V1_n[n] =
+        ((Vg * 2) / math.pi / n) *
+        math.sin(n * math.pi * dutyCycle) *
+        (1 - math.cos((2 * math.pi * n) / 2));
+    }
 
     if (compensation == 1) {
       ABCD = ABCD_matrix_SS(
@@ -150,82 +195,87 @@ function timeSimSourceType1LoadType2(
     coefC[n] = ABCD.subset(math.index(1, 0));
     coefD[n] = ABCD.subset(math.index(1, 1));
   }
-  calcV1AndI1 = false; //don't calculate v1 and i1 yet. We are just looking at v2 and i2 for now.
-  for (i = 0; i < numDelayPoints; i++) {
-    delay = delayVec[i];
-    results = calcEverythingAndCorrelation(
-      calcV1AndI1,
-      Vg,
-      coefA,
-      coefB,
-      coefC,
-      coefD,
-      f_n,
-      numHarmonics,
-      f0,
-      VL,
-      timeVec,
-      V1_n,
-      Vfwd,
-      rectConst,
-      invConst,
-      fs,
-      delay
-    );
-    correlationVec[i] = results.correlation;
-  }
-  MaxIndexValue = indexOfMax(correlationVec);
+  //let objFuncVec = new Array();
+  let objFuncVec = new Array();
+  for (m = 0; m < numOutputDutyCyclePoints; m++) {
+    objFuncVec[m] = new Array();
+    for (n = 0; n < numDelayPoints; n++) {
+      outputDutyCycle = outputDutyCycleVec[m];
 
-  delay = delayVec[MaxIndexValue]; //specify the correct delay.
-  //delay = 2 * 10 ** -6;
-  //delay = 1 * 10 ** -6;
-  //delay = 3.9887 * 10 ** -6;
-  calcV1AndI1 = true; //time to calculate everything
-  results = calcEverythingAndCorrelation(
-    calcV1AndI1,
-    Vg,
+      delay = delayVec[n];
+      //(delay);
+      objFunc = calcI2AtZeroCrossingObjFunc(
+        coefA,
+        coefB,
+        numHarmonics,
+        f_n,
+        f0,
+        VL,
+        V1_n,
+        Vfwd,
+        rectConst,
+        delay,
+        outputDutyCycle
+      );
+      objFuncVec[m][n] = objFunc;
+    }
+  }
+  maxIndicesValue = indicesOfMax2D(objFuncVec);
+  correctOutputDutyCycle = outputDutyCycleVec[maxIndicesValue.maxIndex1];
+  correctDelay = delayVec[maxIndicesValue.maxIndex2];
+  //console.log(correctDelay);
+  correctDelay = currentPhasors = calcCurrentPhasorsI1_n_I2_n(
     coefA,
     coefB,
     coefC,
     coefD,
-    f_n,
     numHarmonics,
+    f_n,
     f0,
     VL,
     timeVec,
     V1_n,
     Vfwd,
     rectConst,
-    invConst,
-    fs,
-    delay
+    correctDelay,
+    correctOutputDutyCycle
   );
-  //
-  //
-  //
-  //console.log(results.v1); ///I AM HERE!!! I THINK I GOT IT WORKING :) GOT MAX INDEX VALUE!
-  //FINAL OUTPUTS OF THIS FUNCTION
 
-  results2 = calcPLAndRLAndEfficiency(
-    Vg,
-    VL,
-    timeVec,
-    rectConst,
-    invConst,
-    results.i2,
-    results.v2,
-    results.i1,
-    results.v1
+  V2_n = currentPhasors.V2_n;
+  V2_n_nD = currentPhasors.V2_n_nD;
+  I1_n = currentPhasors.I1_n;
+  I2_n = currentPhasors.I2_n;
+
+  currentTimeDomainWaveforms = calcCurrentTimeDomainGivenPhasorsI1_n_I2_n(
+    I1_n,
+    I2_n,
+    numHarmonics,
+    f_n,
+    f0,
+    timeVec
   );
+  i1 = currentTimeDomainWaveforms.i1;
+  i2 = currentTimeDomainWaveforms.i2;
+
+  v1 = getTimeDomainV1(f0, invConst, dutyCycle, Vg, timeVec);
+
+  P1 = getPowerFromPhasors(V1_n, I1_n, numHarmonics);
+  P2 = getPowerFromPhasors(V2_n_nD, I2_n, numHarmonics);
+  efficiency = P2 / P1;
+  //console.log(i2[indexOfMax(i2)]);
+  //console.log(V1_n);
+
+  RL = VL ** 2 / P2;
+
   return {
-    i2: results.i2,
-    v2: results.v2,
-    i1: results.i1,
-    v1: results.v1,
-    PL: results2.PL,
-    RL: results2.RL,
+    i2: i2,
+    v2: v2,
+    i1: i1,
+    v1: v1,
+    PL: P2,
+    RL: RL,
     timeVec: timeVec,
-    efficiency: results2.efficiency,
+    efficiency: efficiency,
   };
 }
 //
@@ -235,144 +285,229 @@ function timeSimSourceType1LoadType2(
 //
 //
 
-function calcEverythingAndCorrelation(
-  calcV1AndI1,
-  Vg,
+function getPowerFromPhasors(V_n, I_n, numHarmonics) {
+  let P = 0;
+  for (i = 1; i < numHarmonics + 1; i++) {
+    P = math.add(P, math.re(math.multiply(I_n[i], math.conj(V_n[i]))));
+  }
+  return P / 2;
+}
+
+function getTimeDomainV1(f0, invConst, dutyCycle, Vg, timeVec) {
+  let T0 = 1 / f0;
+  let onDuration = dutyCycle * T0;
+  let numberOfTimePoints = timeVec.length;
+  let v1 = Array(numberOfTimePoints).fill(0);
+  if (invConst == 1) {
+    for (m = 0; m < 6; m++) {
+      for (n = 0; n < numberOfTimePoints - 1; n++) {
+        if (
+          ((-dutyCycle * T0) / 2 + m * T0 < timeVec[n]) &
+          (timeVec[n] < (dutyCycle * T0) / 2 + m * T0)
+        ) {
+          v1[n] = Vg;
+        }
+      }
+    }
+  }
+
+  if (invConst == 2) {
+    for (m = 0; m < 3; m++) {
+      for (n = 0; n < numberOfTimePoints - 1; n++) {
+        if (
+          (-onDuration / 2 + m * T0 + T0 / 2 < timeVec[n]) &
+          (timeVec[n] < onDuration / 2 + m * T0 + T0 / 2)
+        ) {
+          v1[n] = -Vg;
+        }
+        if (
+          (-onDuration / 2 + m * T0 < timeVec[n]) &
+          (timeVec[n] < onDuration / 2 + m * T0)
+        ) {
+          v1[n] = Vg;
+        }
+      }
+    }
+  }
+  return v1;
+}
+
+function calcCurrentPhasorsI1_n_I2_n(
   coefA,
   coefB,
   coefC,
   coefD,
-  f_n,
   numHarmonics,
+  f_n,
   f0,
   VL,
   timeVec,
   V1_n,
   Vfwd,
   rectConst,
-  invConst,
-  fs,
-  delay
+  correctDelay,
+  correctOutputDutyCycle
 ) {
+  let i2 = 0;
+  let i1 = 0;
   let V2_n = [];
   let I2_n = [];
   let I1_n = [];
-  for (n = 0; n < numHarmonics; n++) {
-    nodd = (n + 1) * 2 - 1;
-    V2_n[n] = math.complex({
+  let V2_n_nD = [];
+
+  for (i = 1; i < numHarmonics + 1; i++) {
+    V2_n[i] = math.complex({
       abs:
-        ((VL + 2 * Vfwd) * (2 * rectConst * math.sin((nodd * math.pi) / 2))) /
-        nodd /
+        ((VL + 2 * Vfwd) *
+          (2 * rectConst * math.sin(i * math.pi * correctOutputDutyCycle))) /
+        i /
         math.pi,
-      arg: 2 * math.pi * f_n[n] * delay,
+      arg: -2 * math.pi * f_n[i] * correctDelay,
     });
-    I2_n[n] = math.divide(
-      math.subtract(V1_n[n], math.multiply(coefA[n], V2_n[n])),
-      coefB[n]
+
+    V2_n_nD[i] = math.complex({
+      abs:
+        (VL *
+          (2 * rectConst * math.sin(i * math.pi * correctOutputDutyCycle))) /
+        i /
+        math.pi,
+      arg: -2 * math.pi * f_n[i] * correctDelay,
+    });
+
+    I2_n[i] = math.divide(
+      math.subtract(V1_n[i], math.multiply(coefA[i], V2_n[i])),
+      coefB[i]
     );
 
-    //I1_n[n] = 1;
-    if (calcV1AndI1 === true) {
-      I1_n[n] = math.add(
-        math.multiply(coefC[n], V2_n[n]),
-        math.multiply(coefD[n], I2_n[n])
-      );
-    }
-  }
-  let timeDomainResults =
-    getV2AndI2AndI1AndV1TimeDomainWaveformsAndCorrelationGivenPhasors(
-      calcV1AndI1,
-      invConst,
-      Vg,
-      V1_n,
-      V2_n,
-      I2_n,
-      I1_n,
-      timeVec,
-      fs,
-      numHarmonics,
-      f_n
+    I1_n[i] = math.add(
+      math.multiply(coefC[i], V2_n[i]),
+      math.multiply(coefD[i], I2_n[i])
     );
+  }
+  //console.log("V2_n");
+
+  //console.log(V2_n);
   return {
-    i2: timeDomainResults.i2,
-    v2: timeDomainResults.v2,
-    i1: timeDomainResults.i1,
-    v1: timeDomainResults.v1,
-    correlation: timeDomainResults.correlation,
+    I1_n: I1_n,
+    I2_n: I2_n,
+    V2_n: V2_n,
+    V2_n_nD: V2_n_nD,
   };
 }
-//
-//
 
-function getV2AndI2AndI1AndV1TimeDomainWaveformsAndCorrelationGivenPhasors(
-  calcV1AndI1,
-  invConst,
-  Vg,
-  V1_n,
-  V2_n,
-  I2_n,
-  I1_n,
-  timeVec,
-  fs,
+function calcI2AtZeroCrossingObjFunc(
+  coefA,
+  coefB,
   numHarmonics,
-  f_n
+  f_n,
+  f0,
+  VL,
+  V1_n,
+  Vfwd,
+  rectConst,
+  delay,
+  outputDutyCycle
 ) {
-  //let sinusoid = [];
-  let numberOfTimePoints = timeVec.length;
-  let i2 = Array(numberOfTimePoints).fill(0);
-  let v2 = Array(numberOfTimePoints).fill(0);
-  let i1 = Array(numberOfTimePoints).fill(0);
-  let v1 = Array(numberOfTimePoints).fill(0);
-  let correlationArray = Array(numberOfTimePoints).fill(0);
-  let correlation = [];
-  //let rectified = Array(numberOfTimePoints).fill(0);
-  //let half_rectified = Array(numberOfTimePoints).fill(0);
-  //let sign = Array(numberOfTimePoints).fill(1);
-  //let half_sign = Array(numberOfTimePoints).fill(1);
+  let i2AtZeroCrossing1 = 0;
+  let i2AtZeroCrossing2 = 0;
+  let T0 = 1 / f0;
+  let special = 0;
+  let V2_n = [];
+  let I2_n = [];
+  i2AtZeroCrossing1 = 0;
+  i2AtZeroCrossing2 = 0;
+  let i = 0;
+  for (i = 1; i < numHarmonics + 1; i++) {
+    V2_n[i] = math.complex({
+      abs:
+        ((VL + 2 * Vfwd) *
+          (2 * rectConst * math.sin(i * math.pi * outputDutyCycle))) /
+        i /
+        math.pi,
+      arg: -2 * math.pi * f_n[i] * delay,
+    });
 
+    I2_n[i] = math.divide(
+      math.subtract(V1_n[i], math.multiply(coefA[i], V2_n[i])),
+      coefB[i]
+    );
+
+    special =
+      special +
+      math.abs(I2_n[i]) *
+        math.cos(2 * math.pi * f_n[i] * delay + I2_n[i].toPolar().phi);
+
+    i2AtZeroCrossing1 =
+      i2AtZeroCrossing1 +
+      math.abs(I2_n[i]) *
+        math.cos(
+          2 * math.pi * f_n[i] * ((outputDutyCycle * T0) / 2 + delay) +
+            I2_n[i].toPolar().phi
+        );
+
+    i2AtZeroCrossing2 =
+      i2AtZeroCrossing2 +
+      math.abs(I2_n[i]) *
+        math.cos(
+          2 * math.pi * f_n[i] * ((-outputDutyCycle * T0) / 2 + delay) +
+            I2_n[i].toPolar().phi
+        );
+  }
+  special = (1 - math.sign(special)) * 100;
+  return (
+    1 / (math.abs(i2AtZeroCrossing1) + math.abs(i2AtZeroCrossing2) + special)
+  );
+}
+
+function calcCurrentTimeDomainGivenPhasorsI1_n_I2_n(
+  I1_n,
+  I2_n,
+  numHarmonics,
+  f_n,
+  f0,
+  timeVec
+) {
+  let numberOfTimePoints = timeVec.length;
+  let i1 = Array(numberOfTimePoints).fill(0);
+  let i2 = Array(numberOfTimePoints).fill(0);
   for (let m = 0; m < numberOfTimePoints; m++) {
-    for (n = 0; n < numHarmonics; n++) {
+    for (n = 1; n < numHarmonics + 1; n++) {
       i2[m] =
         i2[m] +
         math.abs(I2_n[n]) *
           math.cos(2 * math.pi * f_n[n] * timeVec[m] + I2_n[n].toPolar().phi);
 
-      v2[m] =
-        v2[m] +
-        math.abs(V2_n[n]) *
-          math.cos(2 * math.pi * f_n[n] * timeVec[m] + V2_n[n].toPolar().phi);
-      if (calcV1AndI1 === true) {
-        i1[m] =
-          i1[m] +
-          math.abs(I1_n[n]) *
-            math.cos(2 * math.pi * f_n[n] * timeVec[m] + I1_n[n].toPolar().phi);
+      i1[m] =
+        i1[m] +
+        math.abs(I1_n[n]) *
+          math.cos(2 * math.pi * f_n[n] * timeVec[m] + I1_n[n].toPolar().phi);
+    }
+  }
+  return {
+    i1: i1,
+    i2: i2,
+  };
+}
 
-        v1[m] = v1[m] + V1_n[n] * math.cos(2 * math.pi * f_n[n] * timeVec[m]);
+function indicesOfMax2D(arr) {
+  var max = arr[0][0];
+  var lengthIndex1 = arr.length;
+  var lengthIndex2 = arr[0].length;
+  let maxIndex1 = 0;
+  let maxIndex2 = 0;
+
+  for (var n1 = 0; n1 < lengthIndex1; n1++) {
+    for (var n2 = 0; n2 < lengthIndex2; n2++) {
+      if (arr[n1][n2] > max) {
+        maxIndex1 = n1;
+        maxIndex2 = n2;
+        max = arr[n1][n2];
       }
     }
-    if (calcV1AndI1 === true) {
-      v1[m] = (Vg * math.sign(v1[m]) + (2 - invConst) * Vg) / (3 - invConst);
-    }
-    correlationArray[m] = math.multiply(math.sign(i2[m]), math.sign(v2[m]));
   }
-
-  correlation = math.sum(correlationArray);
-
-  //rectified[m] = sinusoid[m];
-  //half_rectified[m] = sinusoid[m];
-  //if (rectified[m] < 0) {
-  //  rectified[m] = math.abs(sinusoid[m]);
-  //  half_rectified[m] = 0;
-  //  sign[m] = -1;
-  //  half_sign[m] = 0;
-  // }
-  //}
   return {
-    i2: i2,
-    v2: v2,
-    i1: i1,
-    v1: v1,
-    correlation: correlation,
+    maxIndex1: maxIndex1,
+    maxIndex2: maxIndex2,
   };
 }
 
@@ -393,6 +528,7 @@ function indexOfMax(arr) {
 
   return maxIndex;
 }
+
 function calcPLAndRLAndEfficiency(
   Vg,
   VL,
