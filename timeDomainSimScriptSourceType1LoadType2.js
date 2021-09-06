@@ -64,7 +64,7 @@ function timeSimSourceType1LoadType2(
   let coefC = [];
   let coefD = [];
   let ABCD = [];
-  let numDelayPoints = 50; //hard code it in
+  let numDelayPoints = 125; //hard code it in
   let delayStart = -T0 / 2;
   let delayEnd = T0 / 2;
   let delayDelta = -(delayStart - delayEnd) / (numDelayPoints - 1);
@@ -89,14 +89,14 @@ function timeSimSourceType1LoadType2(
     outputDutyCycleVec[0] = 0.5;
     numOutputDutyCyclePoints = 1;
   } else {
-    numOutputDutyCyclePoints = 50; //hard code it in
+    numOutputDutyCyclePoints = 75; //hard code it in
     if (dutyCycle < 0.5) {
-      outputDutyCycleStart = dutyCycle;
+      outputDutyCycleStart = dutyCycle * 0.8;
       dutyDutyCycleEnd = 0.52;
     }
     if (dutyCycle > 0.5) {
       outputDutyCycleStart = 0.48;
-      dutyDutyCycleEnd = dutyCycle;
+      dutyDutyCycleEnd = dutyCycle * 1.2;
     }
     outputDutyCycleDelta =
       -(outputDutyCycleStart - dutyDutyCycleEnd) /
@@ -358,7 +358,7 @@ function calcCurrentPhasorsI1_n_I2_n(
   for (i = 1; i < numHarmonics + 1; i++) {
     V2_n[i] = math.complex({
       abs:
-        ((VL + 2 * Vfwd) *
+        ((VL + rectConst * Vfwd) *
           (2 * rectConst * math.sin(i * math.pi * correctOutputDutyCycle))) /
         i /
         math.pi,
@@ -420,7 +420,7 @@ function calcI2AtZeroCrossingObjFunc(
   for (i = 1; i < numHarmonics + 1; i++) {
     V2_n[i] = math.complex({
       abs:
-        ((VL + 2 * Vfwd) *
+        ((VL + rectConst * Vfwd) *
           (2 * rectConst * math.sin(i * math.pi * outputDutyCycle))) /
         i /
         math.pi,
