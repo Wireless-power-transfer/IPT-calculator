@@ -64,7 +64,7 @@ function timeSimSourceType1LoadType2(
   let coefC = [];
   let coefD = [];
   let ABCD = [];
-  let numDelayPoints = 125; //hard code it in
+  let numDelayPoints = 175; //hard code it in
   let delayStart = -T0 / 2;
   let delayEnd = T0 / 2;
   let delayDelta = -(delayStart - delayEnd) / (numDelayPoints - 1);
@@ -89,10 +89,10 @@ function timeSimSourceType1LoadType2(
     outputDutyCycleVec[0] = 0.5;
     numOutputDutyCyclePoints = 1;
   } else {
-    numOutputDutyCyclePoints = 75; //hard code it in
+    numOutputDutyCyclePoints = 125; //hard code it in
     if (dutyCycle < 0.5) {
-      outputDutyCycleStart = dutyCycle * 0.8;
-      dutyDutyCycleEnd = 0.52;
+      outputDutyCycleStart = dutyCycle * 0.7;
+      dutyDutyCycleEnd = 0.5 * (0.5 / dutyCycle) * 1.1;
     }
     if (dutyCycle > 0.5) {
       outputDutyCycleStart = 0.48;
@@ -113,6 +113,7 @@ function timeSimSourceType1LoadType2(
   let efficiency = []; //POWER TRANSFER EFFICIENCY (WILL WORK ON THIS LATER)
 
   let MaxIndexValue = [];
+
   for (n = 1; n < numHarmonics + 1; n++) {
     f_n[n] = f0 * n;
     freq = f_n[n];
@@ -223,8 +224,9 @@ function timeSimSourceType1LoadType2(
   maxIndicesValue = indicesOfMax2D(objFuncVec);
   correctOutputDutyCycle = outputDutyCycleVec[maxIndicesValue.maxIndex1];
   correctDelay = delayVec[maxIndicesValue.maxIndex2];
-  //console.log(correctDelay);
-  correctDelay = currentPhasors = calcCurrentPhasorsI1_n_I2_n(
+  //console.log(correctOutputDutyCycle);
+
+  currentPhasors = calcCurrentPhasorsI1_n_I2_n(
     coefA,
     coefB,
     coefC,
@@ -254,16 +256,17 @@ function timeSimSourceType1LoadType2(
     f0,
     timeVec
   );
+  //console.log(I2_n);
   i1 = currentTimeDomainWaveforms.i1;
   i2 = currentTimeDomainWaveforms.i2;
 
   v1 = getTimeDomainV1(f0, invConst, dutyCycle, Vg, timeVec);
 
   P1 = getPowerFromPhasors(V1_n, I1_n, numHarmonics);
-  P2 = getPowerFromPhasors(V2_n_nD, I2_n, numHarmonics);
+  P2 = getPowerFromPhasors(V2_n, I2_n, numHarmonics);
+  P2 = (P2 * VL) / (VL + Vfwd * rectConst);
+
   efficiency = P2 / P1;
-  //console.log(i2[indexOfMax(i2)]);
-  //console.log(V1_n);
 
   RL = VL ** 2 / P2;
 
@@ -385,7 +388,6 @@ function calcCurrentPhasorsI1_n_I2_n(
     );
   }
   //console.log("V2_n");
-
   //console.log(V2_n);
   return {
     I1_n: I1_n,
