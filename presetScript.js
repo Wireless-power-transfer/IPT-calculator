@@ -9,7 +9,7 @@ function presetFun() {
 
   if (presetChoice == 2) {
     hashString =
-      "#source=1&load=2&inverter=1&rectifier=2&fmin=110e3&fmax=115e3&fnum=250&Vg_Ig=23&RL_VL_IL_PL=12&k=0.42&L1=27.41E-6&L2=27.5e-6&D=0.41&Vfwd=.45&RL1=.193&RL2=.19&RC1=0&RC2=0&C1=.1013E-6&C2=.101E-6&compensation=1&Lf1=5E-6&RLf1=10E-3&Cf1=9.5E-8&RCf1=10E-3&Lf2=5E-6&RLf2=10E-3&Cf2=9.5E-8&RCf2=10E-3&f0=113E3&numHarmonics=20&enableTimeDomainChoice=1";
+      "#source=1&load=2&inverter=1&rectifier=2&fmin=95e3&fmax=115e3&fnum=250&Vg_Ig=23&RL_VL_IL_PL=12&k=0.42&L1=27.41E-6&L2=27.5e-6&D=0.41&Vfwd=.45&RL1=.193&RL2=.19&RC1=0&RC2=0&C1=.1013E-6&C2=.101E-6&compensation=1&Lf1=5E-6&RLf1=10E-3&Cf1=9.5E-8&RCf1=10E-3&Lf2=5E-6&RLf2=10E-3&Cf2=9.5E-8&RCf2=10E-3&f0=113E3&numHarmonics=20&enableTimeDomainChoice=1";
     document.getElementById("presetDescription").innerHTML = "";
     //"<b>Selected preset configuration parameters from following reference (note that component losses were not given in paper):</b> V. P. Galigekere, O. Onar, J. Pries, S. Zou, Z. Wang and M. Chinthavali, 'Sensitivity Analysis of Primary-Side LCC and Secondary-Side Series Compensated Wireless Charging System,' 2018 IEEE Transportation Electrification Conference and Expo (ITEC), Long Beach, CA, USA, 2018, pp. 885-891, doi: 10.1109/ITEC.2018.8450163.";
   }
